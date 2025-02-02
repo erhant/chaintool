@@ -1,0 +1,26 @@
+{
+  "name": "reagent",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0",
+  "dependencies": {
+    "@coinbase/agentkit": "^0.1.1",
+    "@coinbase/agentkit-langchain": "^0.1.0",
+    "@coinbase/cdp-langchain": "^0.0.15",
+    "@langchain/core": "^0.3.37",
+    "@langchain/langgraph": "^0.2.44",
+    "@langchain/openai": "^0.4.2",
+    "dotenv": "^16.4.7",
+    "viem": "^2.22.17"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}
