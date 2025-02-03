@@ -13,6 +13,7 @@ import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import fs from "fs";
+import { messageSigner } from "./tools/sign";
 
 // list of allowed models for this agent
 const OpenAIModel = [
@@ -34,7 +35,8 @@ export type AgentInit = Awaited<ReturnType<typeof initializeAgent>>;
  */
 export async function initializeAgent(
   walletDataPath: string,
-  model: OpenAIModel
+  model: OpenAIModel,
+  agentName: string
 ) {
   const llm = new ChatOpenAI({ model });
 
@@ -51,7 +53,9 @@ export async function initializeAgent(
   }
 
   // Configure CDP Wallet Provider
-  const config = {
+  const config: NonNullable<
+    Parameters<typeof CdpWalletProvider.configureWithWallet>[0]
+  > = {
     apiKeyName: process.env.CDP_API_KEY_NAME,
     apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
       /\\n/g,
@@ -61,14 +65,10 @@ export async function initializeAgent(
     networkId: process.env.NETWORK_ID || "base-sepolia",
   };
 
+  // create wallet provider
   const walletProvider = await CdpWalletProvider.configureWithWallet(config);
 
-  // Initialize AgentKit
-  const apiKeyName = process.env.CDP_API_KEY_NAME;
-  const apiKeyPrivateKey = process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
-    /\\n/g,
-    "\n"
-  );
+  // initialize AgentKit
   const agentkit = await AgentKit.from({
     walletProvider,
     actionProviders: [
@@ -76,8 +76,15 @@ export async function initializeAgent(
       pythActionProvider(),
       walletActionProvider(),
       erc20ActionProvider(),
-      cdpApiActionProvider({ apiKeyName, apiKeyPrivateKey }),
-      cdpWalletActionProvider({ apiKeyName, apiKeyPrivateKey }),
+      cdpApiActionProvider({
+        apiKeyName: config.apiKeyName,
+        apiKeyPrivateKey: config.apiKeyPrivateKey,
+      }),
+      cdpWalletActionProvider({
+        apiKeyName: config.apiKeyName,
+        apiKeyPrivateKey: config.apiKeyPrivateKey,
+      }),
+      messageSigner,
     ],
   });
 
@@ -85,9 +92,6 @@ export async function initializeAgent(
 
   // Store buffered conversation history in memory
   const memory = new MemorySaver();
-  const agentConfig = {
-    configurable: { thread_id: "CDP AgentKit Chatbot Example!" },
-  };
 
   // Create React Agent using the LLM and CDP AgentKit tools
   const agent = createReactAgent({
@@ -111,5 +115,10 @@ restating your tools' descriptions unless it is explicitly requested.
   const exportedWallet = await walletProvider.exportWallet();
   fs.writeFileSync(walletDataPath, JSON.stringify(exportedWallet));
 
-  return { agent, config: agentConfig };
+  return {
+    agent,
+    config: {
+      configurable: { thread_id: agentName },
+    },
+  };
 }
