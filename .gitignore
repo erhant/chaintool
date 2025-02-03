@@ -1,4 +1,4 @@
 node_modules
 .env
 cdp_api_key.json
-wallet_data.txt
+wallet_data.*
