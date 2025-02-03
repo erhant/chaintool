@@ -30,16 +30,18 @@ async function main() {
     const question = (prompt: string): Promise<string> =>
       new Promise((resolve) => rl.question(prompt, resolve));
 
-    while (true) {
-      console.log("Available modes:");
-      console.log("chat\tInteractive chat mode");
-      console.log("auto\tAutonomous action mode");
+    let exit = false;
+    while (!exit) {
+      console.log("Select an option:");
+      console.log("chat\tInteractively chat with your Agent.");
+      console.log("auto\tLet your agent loose, make it autonomous.");
+      console.log("exit\tQuit the agent (CTRL+C works too).");
 
       const CHOICES = ["chat", "auto"] as const;
       type CHOICES = (typeof CHOICES)[number];
       const choice = (await question("\nChoose a mode by typing its name: "))
         .toLowerCase()
-        .trim() as CHOICES;
+        .trim() as CHOICES | "exit";
 
       switch (choice) {
         case "chat": {
@@ -48,6 +50,11 @@ async function main() {
         }
         case "auto": {
           await runAutonomousMode(agentInit);
+          break;
+        }
+        case "exit": {
+          console.log("Bye bye!");
+          exit = true;
           break;
         }
         default: {
@@ -71,7 +78,6 @@ async function main() {
 
 // start the agent when running directly
 if (require.main === module) {
-  console.log("Starting Agent...");
   main().catch((error) => {
     console.error("Error:", error);
     process.exit(1);
