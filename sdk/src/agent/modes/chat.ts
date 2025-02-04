@@ -25,11 +25,14 @@ export async function runChatMode(
     );
 
     for await (const chunk of stream) {
+      console.debug({ chunk });
+
       if ("agent" in chunk) {
         console.log(chunk.agent.messages[0].content);
       } else if ("tools" in chunk) {
         console.log(chunk.tools.messages[0].content);
       }
+
       console.log("-------------------");
     }
   }
