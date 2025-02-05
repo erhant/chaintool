@@ -19,6 +19,7 @@
     "@langchain/langgraph": "^0.2.44",
     "@langchain/openai": "^0.4.2",
     "dotenv": "^16.4.7",
+    "nillion-sv-wrappers": "^1.0.7",
     "viem": "^2.22.17",
     "zod": "^3.24.1"
   },
