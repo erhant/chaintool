@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import {AgentToolRegistry} from "../AgentToolRegistry.sol";
+import {AgentToolRegistry} from "../AgentTools.sol";
 
 /// @notice A tool that adds two numbers together and returns their sum.
 contract AddTool {
     AgentToolRegistry immutable registry;
 
-    constructor(AgentToolRegistry _registry) {
-        registry = _registry;
+    constructor(address _registry) {
+        registry = AgentToolRegistry(_registry);
     }
 
     function register() external {

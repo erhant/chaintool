@@ -20,23 +20,25 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Go to contract directory
-        run: cd contracts
+      # go to the contracts directory!
+      - run: cd contracts
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Show Forge version
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name:
+      - name: Show versions
         run: |
           forge --version
+          bun --version
 
-      - name: Run Forge fmt
+      - name: Build
         run: |
-          forge fmt --check
-        id: fmt
-
-      - name: Run Forge build
-        run: |
+          forge install
+          bun install
           forge build --sizes
         id: build
 

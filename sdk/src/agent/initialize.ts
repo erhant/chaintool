@@ -16,13 +16,7 @@ import fs from "fs";
 import { messageSigner } from "./tools/sign";
 
 // list of allowed models for this agent
-const OpenAIModel = [
-  "gpt-4-turbo",
-  "gpt-4o",
-  "gpt-4o-mini",
-  "o1-mini",
-  "o1-preview",
-] as const;
+const OpenAIModel = ["gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"] as const;
 type OpenAIModel = (typeof OpenAIModel)[number];
 
 /** Agent initialization type as per the return type of `initializeAgent`. */
@@ -33,11 +27,7 @@ export type AgentInit = Awaited<ReturnType<typeof initializeAgent>>;
  * @param walletDataPath - Path to the wallet data file, e.g. "wallet_data.json"
  * @returns Agent executor and config
  */
-export async function initializeAgent(
-  walletDataPath: string,
-  model: OpenAIModel,
-  agentName: string
-) {
+export async function initializeAgent(walletDataPath: string, model: OpenAIModel, agentName: string) {
   const llm = new ChatOpenAI({ model });
 
   let walletDataStr: string | undefined = undefined;
@@ -53,14 +43,9 @@ export async function initializeAgent(
   }
 
   // Configure CDP Wallet Provider
-  const config: NonNullable<
-    Parameters<typeof CdpWalletProvider.configureWithWallet>[0]
-  > = {
+  const config: NonNullable<Parameters<typeof CdpWalletProvider.configureWithWallet>[0]> = {
     apiKeyName: process.env.CDP_API_KEY_NAME,
-    apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(
-      /\\n/g,
-      "\n"
-    ),
+    apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     cdpWalletData: walletDataStr,
     networkId: process.env.NETWORK_ID || "base-sepolia",
   };

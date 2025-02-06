@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "abi": "forge inspect AgentToolRegistry abi | pbcopy",
+    "deploy": "forge deploy AgentToolRegistry --network localhost"
+  },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.2.0"
   }

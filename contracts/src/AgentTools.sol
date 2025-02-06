@@ -2,7 +2,30 @@
 pragma solidity ^0.8.22;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
-import {AgentTool} from "./AgentTool.sol";
+
+/// @notice A tool description that can be used by agents.
+struct AgentTool {
+    /// @notice Tool index.
+    uint256 idx;
+    /// @notice The name of the action.
+    /// This is used to identify the action when it is added to an Agent.
+    string name;
+    /// @notice A description that helps the AI understand when and how to use the action.
+    /// It's important to describe the inputs and outputs of the action and include examples.
+    /// Additionally, think about what inputs can be removed entirely and fetched or inferred by the LLM, so that users don't have to manually provide them.
+    string desc;
+    /// @notice An array of human-readable ABI type strings that describe the ABIs of the action.
+    /// @dev See: https://abitype.dev/api/human
+    /// @dev Example: `function balanceOf(address owner) view returns (uint256)`
+    string[] abitypes;
+    /// @notice Tool category. This is expected to be a string that is used to group tools together.
+    bytes32 category;
+    /// @notice The address of the target contract that the action will be called on.
+    /// @dev This may not be unique, as multiple tools may target the same contract.
+    address target;
+    /// @notice The address that registered the tool.
+    address owner;
+}
 
 /// @notice This is a contract that will be used to register agents and tools.
 contract AgentToolRegistry is Ownable {
@@ -10,6 +33,7 @@ contract AgentToolRegistry is Ownable {
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
 
+    /// @notice Error emitted when an index is out of bounds.
     error OutOfBounds();
 
     /*//////////////////////////////////////////////////////////////
@@ -17,7 +41,7 @@ contract AgentToolRegistry is Ownable {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Emitted when a tool is registered.
-    event ToolRegistered(uint256 idx, string indexed name, address indexed owner, address indexed target);
+    event ToolRegistered(uint256 idx, string name, address target, address indexed owner, bytes32 indexed category);
 
     /*//////////////////////////////////////////////////////////////
                                  STORAGE
@@ -25,6 +49,9 @@ contract AgentToolRegistry is Ownable {
 
     /// @notice The tools that are registered.
     AgentTool[] tools;
+
+    /// @notice A mapping of tool indexes by category.
+    mapping(bytes32 category => uint256[]) public toolIdxsByCategory;
 
     /*//////////////////////////////////////////////////////////////
                                   LOGIC
@@ -42,6 +69,19 @@ contract AgentToolRegistry is Ownable {
         return tools[index];
     }
 
+    /// @notice Returns the descriptions of the tools at the given indexes.
+    function getDescriptions(uint256[] calldata indexes) external view returns (string[] memory) {
+        string[] memory descs = new string[](indexes.length);
+        for (uint256 i = 0; i < indexes.length; i++) {
+            uint256 idx = indexes[i];
+            if (idx >= tools.length) {
+                revert OutOfBounds();
+            }
+            descs[i] = tools[idx].desc;
+        }
+        return descs;
+    }
+
     /// @notice Register a tool.
     /// @param name The name of the tool.
     /// @param desc A description of the tool.
@@ -54,7 +94,7 @@ contract AgentToolRegistry is Ownable {
         string memory name,
         string memory desc,
         string[] memory abitypes,
-        string memory category,
+        bytes32 category,
         address target,
         address owner
     ) external returns (uint256 idx) {
@@ -72,6 +112,6 @@ contract AgentToolRegistry is Ownable {
         tools.push(tool);
 
         // emit event
-        emit ToolRegistered(tool.idx, tool.name, tool.owner, tool.target);
+        emit ToolRegistered(tool.idx, tool.name, tool.target, tool.owner, tool.category);
     }
 }

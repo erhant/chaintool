@@ -1,13 +1,11 @@
 import { describe, expect, test } from "bun:test";
 import { encodeAbiParameters, encodeFunctionData, parseAbi, parseAbiParameters } from "viem";
 
-describe("Basic test suite", () => {
+describe("abi encoding tests", () => {
   test("addition", () => {
     // this will be read from the contract
-    // const ABI: string = "function add(int256 a, int256 b) pure returns (int256)";
-    const ABI: string = "add(int256,int256)";
+    const ABI: string = "function add(int256 a, int256 b) pure returns (int256)";
     const parsedAbi = parseAbi([ABI]);
-    console.log(parsedAbi);
     const calldata = encodeFunctionData({
       // abi: parseAbi(["function add(int256 a, int256 b) pure returns (int256)"]),
       abi: parsedAbi as any, // any-cast due to dynamic abis

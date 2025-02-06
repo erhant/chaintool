@@ -6,6 +6,25 @@ export default [
   },
   {
     type: "function",
+    name: "getDescriptions",
+    inputs: [
+      {
+        name: "indexes",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "string[]",
+        internalType: "string[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "getTool",
     inputs: [
       {
@@ -42,8 +61,8 @@ export default [
           },
           {
             name: "category",
-            type: "string",
-            internalType: "string",
+            type: "bytes32",
+            internalType: "bytes32",
           },
           {
             name: "target",
@@ -94,8 +113,8 @@ export default [
       },
       {
         name: "category",
-        type: "string",
-        internalType: "string",
+        type: "bytes32",
+        internalType: "bytes32",
       },
       {
         name: "target",
@@ -123,6 +142,30 @@ export default [
     inputs: [],
     outputs: [],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "toolIdxsByCategory",
+    inputs: [
+      {
+        name: "category",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -169,8 +212,14 @@ export default [
       {
         name: "name",
         type: "string",
-        indexed: true,
+        indexed: false,
         internalType: "string",
+      },
+      {
+        name: "target",
+        type: "address",
+        indexed: false,
+        internalType: "address",
       },
       {
         name: "owner",
@@ -179,10 +228,10 @@ export default [
         internalType: "address",
       },
       {
-        name: "target",
-        type: "address",
+        name: "category",
+        type: "bytes32",
         indexed: true,
-        internalType: "address",
+        internalType: "bytes32",
       },
     ],
     anonymous: false,
