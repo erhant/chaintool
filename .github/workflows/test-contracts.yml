@@ -29,7 +29,6 @@ jobs:
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
 
-      - name:
       - name: Show versions
         run: |
           forge --version

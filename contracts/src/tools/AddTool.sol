@@ -15,8 +15,10 @@ contract AddTool {
         string[] memory abis = new string[](1);
         abis[0] = "function add(int256 a, int256 b) pure returns (int256)";
 
+        bytes32[] memory categories = new bytes32[](1);
+        categories[0] = "math";
         registry.register(
-            "Add", "Adds two numbers together and returns their sum.", abis, "math", address(this), msg.sender
+            "Add", "Adds two numbers together and returns their sum.", abis, categories, address(this), msg.sender
         );
     }
 

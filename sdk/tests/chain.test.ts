@@ -68,5 +68,8 @@ describe("chain calls", () => {
     }));
 
     console.log(tools);
+
+    // make a call with its abi
+    // TODO: get abis from chosen tool, and call addition
   });
 });

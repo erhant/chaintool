@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { encodeAbiParameters, encodeFunctionData, parseAbi, parseAbiParameters } from "viem";
+import { encodeFunctionData, parseAbi } from "viem";
 
 describe("abi encoding tests", () => {
   test("addition", () => {

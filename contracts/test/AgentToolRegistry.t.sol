@@ -34,7 +34,7 @@ contract AgentToolRegistryTest is Test {
         // verify tool details
         assertEq(tool.idx, 0);
         assertEq(tool.name, "Add");
-        assertEq(tool.category, "math");
+        assertEq(tool.categories[0], "math");
         assertEq(tool.target, address(addTool));
         assertEq(tool.owner, address(this));
 

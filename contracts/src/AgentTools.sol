@@ -18,8 +18,9 @@ struct AgentTool {
     /// @dev See: https://abitype.dev/api/human
     /// @dev Example: `function balanceOf(address owner) view returns (uint256)`
     string[] abitypes;
-    /// @notice Tool category. This is expected to be a string that is used to group tools together.
-    bytes32 category;
+    /// @notice Tool categories.
+    /// @dev This is expected to be a string that is used to group tools together.
+    bytes32[] categories;
     /// @notice The address of the target contract that the action will be called on.
     /// @dev This may not be unique, as multiple tools may target the same contract.
     address target;
@@ -86,7 +87,7 @@ contract AgentToolRegistry is Ownable {
     /// @param name The name of the tool.
     /// @param desc A description of the tool.
     /// @param abitypes An array of human-readable ABI type strings that describe the ABIs of the action.
-    /// @param category The category of the tool.
+    /// @param categories The categories of the tool.
     /// @param target The address of the target contract that the action will be called on.
     /// @param owner The address that registered the tool.
     /// @return idx The index of the tool.
@@ -94,7 +95,7 @@ contract AgentToolRegistry is Ownable {
         string memory name,
         string memory desc,
         string[] memory abitypes,
-        bytes32 category,
+        bytes32[] memory categories,
         address target,
         address owner
     ) external returns (uint256 idx) {
@@ -105,13 +106,15 @@ contract AgentToolRegistry is Ownable {
             name: name,
             desc: desc,
             abitypes: abitypes,
-            category: category,
+            categories: categories,
             target: target,
             owner: owner
         });
         tools.push(tool);
 
-        // emit event
-        emit ToolRegistered(tool.idx, tool.name, tool.target, tool.owner, tool.category);
+        // emit events for each category
+        for (uint256 i = 0; i < categories.length; i++) {
+            emit ToolRegistered(idx, name, target, owner, categories[i]);
+        }
     }
 }

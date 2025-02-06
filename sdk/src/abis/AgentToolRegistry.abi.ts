@@ -60,9 +60,9 @@ export default [
             internalType: "string[]",
           },
           {
-            name: "category",
-            type: "bytes32",
-            internalType: "bytes32",
+            name: "categories",
+            type: "bytes32[]",
+            internalType: "bytes32[]",
           },
           {
             name: "target",
@@ -112,9 +112,9 @@ export default [
         internalType: "string[]",
       },
       {
-        name: "category",
-        type: "bytes32",
-        internalType: "bytes32",
+        name: "categories",
+        type: "bytes32[]",
+        internalType: "bytes32[]",
       },
       {
         name: "target",
