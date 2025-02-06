@@ -1,4 +1,4 @@
-name: CI
+name: Contract Tests
 
 on:
   push:
@@ -19,6 +19,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Go to contract directory
+        run: cd contracts
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
