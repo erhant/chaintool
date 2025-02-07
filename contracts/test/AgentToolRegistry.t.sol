@@ -66,4 +66,35 @@ contract AgentToolRegistryTest is Test {
         // assertEq(keccak256(abi.encodePacked(descs[0])), keccak256(abi.encodePacked(addTool.desc)));
         // assertEq(keccak256(abi.encodePacked(descs[1])), keccak256(abi.encodePacked(addTool.desc)));
     }
+
+    function test_FailOnNonFunctionAbi() public {
+        string[] memory abis = new string[](1);
+        abis[0] = "event Yeahbaby(address who)";
+        bytes32[] memory categories = new bytes32[](1);
+        categories[0] = "math";
+
+        // registers itself; expect the event
+        vm.expectRevert(AgentToolRegistry.InvalidAbiType.selector);
+        registry.register("Fail", "Should fail.", abis, categories, address(this), msg.sender);
+    }
+
+    function test_FailOnMissingAbi() public {
+        string[] memory abis = new string[](0);
+        bytes32[] memory categories = new bytes32[](1);
+        categories[0] = "math";
+
+        // registers itself; expect the event
+        vm.expectRevert(AgentToolRegistry.MissingAbiTypes.selector);
+        registry.register("Fail", "Should fail.", abis, categories, address(this), msg.sender);
+    }
+
+    function test_FailOnMissingCategory() public {
+        string[] memory abis = new string[](1);
+        abis[0] = "function add(int256 a, int256 b) pure returns (int256)";
+        bytes32[] memory categories = new bytes32[](0);
+
+        // registers itself; expect the event
+        vm.expectRevert(AgentToolRegistry.MissingCategories.selector);
+        registry.register("Fail", "Should fail.", abis, categories, address(this), msg.sender);
+    }
 }

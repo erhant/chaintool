@@ -14,6 +14,10 @@ import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import fs from "fs";
 import { messageSigner } from "./tools/sign";
+import { observeToolsAction } from "./tools/chain/observeTools";
+import { createViemClient } from "./tools/chain";
+import { observeToolsAbisAction } from "./tools/chain/observeToolAbis";
+import { useToolAction } from "./tools/chain/useTool";
 
 // list of allowed models for this agent
 const OpenAIModel = ["gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"] as const;
@@ -53,6 +57,8 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
   // create wallet provider
   const walletProvider = await CdpWalletProvider.configureWithWallet(config);
 
+  const viemClient = createViemClient("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+  const registryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   // initialize AgentKit
   const agentkit = await AgentKit.from({
     walletProvider,
@@ -69,7 +75,10 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
         apiKeyName: config.apiKeyName,
         apiKeyPrivateKey: config.apiKeyPrivateKey,
       }),
-      messageSigner,
+      // messageSigner,
+      observeToolsAction(registryAddress, viemClient),
+      observeToolsAbisAction(registryAddress, viemClient),
+      useToolAction(registryAddress, viemClient),
     ],
   });
 

@@ -4,6 +4,7 @@ pragma solidity ^0.8.22;
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @notice A tool description that can be used by agents.
+/// @author erhant
 struct AgentTool {
     /// @notice Tool index.
     uint256 idx;
@@ -29,6 +30,7 @@ struct AgentTool {
 }
 
 /// @notice This is a contract that will be used to register agents and tools.
+/// @author erhant
 contract AgentToolRegistry is Ownable {
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
@@ -36,6 +38,12 @@ contract AgentToolRegistry is Ownable {
 
     /// @notice Error emitted when an index is out of bounds.
     error OutOfBounds();
+    /// @notice Error emitted when the ABI types are missing.
+    error MissingAbiTypes();
+    /// @notice Error emitted when the categories are missing.
+    error MissingCategories();
+    /// @notice Error emitted when an invalid ABI type is provided.
+    error InvalidAbiType();
 
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
@@ -100,6 +108,16 @@ contract AgentToolRegistry is Ownable {
         address owner
     ) external returns (uint256 idx) {
         idx = tools.length;
+
+        // all abi-types must start with "function"
+        require(abitypes.length > 0, MissingAbiTypes());
+        for (uint256 i = 0; i < abitypes.length; i++) {
+            require(bytes(abitypes[i]).length >= 8, InvalidAbiType());
+            require(bytes(abitypes[i])[0] == bytes("function")[0], InvalidAbiType());
+        }
+
+        // require categories
+        require(categories.length > 0, MissingCategories());
 
         AgentTool memory tool = AgentTool({
             idx: idx,

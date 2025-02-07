@@ -1,15 +1,19 @@
 import { customActionProvider, EvmWalletProvider } from "@coinbase/agentkit";
 import z from "zod";
 import abi from "../../../abis/AgentToolRegistry.abi";
-import { Address, Hex, PublicClient } from "viem";
+import { Address, createWalletClient, Hex, publicActions, PublicClient } from "viem";
 import { createPublicClient, http } from "viem";
-import { baseSepolia } from "viem/chains";
+import { anvil, baseSepolia } from "viem/chains";
+import { privateKeyToAccount } from "viem/accounts";
 
-const SCHEMA = z.object({
-  name: z.string().describe("The name of the tool"),
-  // TODO: get args to be abi-encoded here
-});
-type SCHEMA = z.infer<typeof SCHEMA>;
+export type ViemClient = ReturnType<typeof createPublicClient>;
+export function createViemClient(privateKey: Hex) {
+  return createWalletClient({
+    account: privateKeyToAccount(privateKey),
+    chain: anvil, // TODO: !!!
+    transport: http(),
+  }).extend(publicActions);
+}
 
 export const onchainToolsProvider = async (
   client: PublicClient,

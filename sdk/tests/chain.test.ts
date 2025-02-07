@@ -1,16 +1,23 @@
-import { beforeAll, describe, test } from "bun:test";
+import { beforeAll, describe, expect, test } from "bun:test";
 import {
+  AbiFunction,
   bytesToString,
   createPublicClient,
+  createWalletClient,
+  encodeAbiParameters,
   encodeFunctionData,
   fromBytes,
+  Hex,
   hexToString,
   http,
+  parseAbi,
+  publicActions,
   PublicClient,
 } from "viem";
 import { anvil } from "viem/chains";
 import abi from "../src/abis/AgentToolRegistry.abi";
 import { privateKeyToAccount } from "viem/accounts";
+import { tool } from "@langchain/core/tools";
 
 // get tool events from chain for your category
 
@@ -24,11 +31,12 @@ import { privateKeyToAccount } from "viem/accounts";
 //   },
 // });
 
-function createClient() {
-  return createPublicClient({
+function createClient(privateKey: Hex) {
+  return createWalletClient({
+    account: privateKeyToAccount(privateKey),
     chain: anvil,
     transport: http(),
-  });
+  }).extend(publicActions);
 }
 
 describe("chain calls", () => {
@@ -36,7 +44,7 @@ describe("chain calls", () => {
   let client: ReturnType<typeof createClient>;
 
   beforeAll(() => {
-    client = createClient();
+    client = createClient("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
   });
 
   test("addition", async () => {
@@ -48,12 +56,14 @@ describe("chain calls", () => {
       // args: filter,
     });
 
+    // get metadata for tools, casting idx and category
     const toolMetadata = toolEventLogs.map((log) => ({
       ...log.args,
       idx: BigInt(log.args.idx ?? 0), // TODO: ?? done due to undefined thing
       category: hexToString(log.args.category ?? "0x", { size: 32 }),
     }));
 
+    // read descriptions for each tool
     const toolDescriptions = await client.readContract({
       address: registryAddr,
       abi,
@@ -67,9 +77,51 @@ describe("chain calls", () => {
       description: toolDescriptions[i],
     }));
 
-    console.log(tools);
-
     // make a call with its abi
-    // TODO: get abis from chosen tool, and call addition
+    const tool = await client.readContract({
+      address: registryAddr,
+      abi,
+      functionName: "getTool",
+      args: [tools[0].idx],
+    });
+    console.log({ tool });
+
+    expect(tool.abitypes[0]).toBe("function add(int256 a, int256 b) pure returns (int256)");
+    const parsedAbi = (parseAbi([tool.abitypes[0]]) as AbiFunction[])[0];
+    console.log(parsedAbi);
+    // TODO: is this correct?
+    const stateMut = parsedAbi.stateMutability;
+    if (stateMut === "view" || stateMut === "pure") {
+      // make a call
+      const result = await client.readContract({
+        address: tool.target,
+        abi: [parsedAbi],
+        functionName: parsedAbi.name,
+        // in this case we are calling `add` so its two numbers
+        args: [4, 5],
+      });
+
+      console.log(result);
+    } else {
+      // make a transaction
+      const { request, result } = await client.simulateContract({
+        address: tool.target,
+        abi: [parsedAbi],
+        functionName: parsedAbi.name,
+        args: [4n, 5n],
+      });
+      console.log(result);
+      const txHash = await client.writeContract(request);
+    }
+    // const calldata = encodeFunctionData({
+    //   // abi: parseAbi(["function add(int256 a, int256 b) pure returns (int256)"]),
+    //   abi: parsedAbi as any, // any-cast due to dynamic abis
+    //   functionName: "add",
+    //   args: [BigInt(1), BigInt(2)],
+    // });
+
+    // expect(calldata).toBe(
+    //   "0xa5f3c23b00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
+    // );
   });
 });
