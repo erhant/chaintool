@@ -63,10 +63,10 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
   const agentkit = await AgentKit.from({
     walletProvider,
     actionProviders: [
-      wethActionProvider(),
-      pythActionProvider(),
+      // wethActionProvider(),
+      // pythActionProvider(),
       walletActionProvider(),
-      erc20ActionProvider(),
+      // erc20ActionProvider(),
       cdpApiActionProvider({
         apiKeyName: config.apiKeyName,
         apiKeyPrivateKey: config.apiKeyPrivateKey,

@@ -9,12 +9,25 @@ AgentKit supports tools within the code. This project aims to improve upon this 
 Here is a chat flow:
 
 ```diff
-- "First, fetch all on-chain tools for me."
+- First, fetch all on-chain tools for me.
 + AI uses `observeTools` action.
 # ...
-- "Please get the details of the "Add" tool."
+- Please get the details of the "Add" tool.
 + AI uses `observeToolAbis` action.
 # ...
-- "Use this tool to add numbers 5 and 9 please."
+- Use this tool to add numbers 5 and 9 please.
++ AI uses `useTool` action.
+```
+
+Here is another
+
+```diff
+- First, fetch all on-chain tools for me.
++ AI uses `observeTools` action.
+# ...
+- Please get the details of the "ERC20" tool.
++ AI uses `observeToolAbis` action.
+# ...
+- Use the ERC20 tool to check the balance of address 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 + AI uses `useTool` action.
 ```

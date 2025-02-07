@@ -47,6 +47,26 @@ describe("chain calls", () => {
     client = createClient("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
   });
 
+  test("all tools", async () => {
+    // get tools via events
+    const toolEventLogs = await client.getContractEvents({
+      address: registryAddr,
+      abi,
+      eventName: "ToolRegistered",
+      // args: filter,
+      fromBlock: "earliest",
+    });
+
+    // get metadata for tools, casting idx and category
+    const toolMetadata = toolEventLogs.map((log) => ({
+      ...log.args,
+      idx: BigInt(log.args.idx ?? 0), // TODO: ?? done due to undefined thing
+      category: hexToString(log.args.category ?? "0x", { size: 32 }),
+    }));
+
+    console.log(toolMetadata);
+  });
+
   test("addition", async () => {
     // get tools via events
     const toolEventLogs = await client.getContractEvents({

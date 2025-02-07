@@ -5,7 +5,10 @@ import z from "zod";
 import { ViemClient } from ".";
 
 const SCHEMA = z.object({
-  categories: z.array(z.string()).describe("The category of tools to get, leave empty to get all tools."),
+  categories: z
+    .array(z.string())
+    .transform((vals) => vals.filter((s) => !(s === "" || s === "all"))) // LLM loves this so we prevent it here
+    .describe("The category of tools to get, leave empty to get all tools."),
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
@@ -30,14 +33,17 @@ export const observeToolsAction = (registryAddr: Address, client: ViemClient) =>
         args: {
           category: bytes32categories.length === 0 ? null : bytes32categories,
         },
+        fromBlock: "earliest", // this is important
       });
 
-      // get metadata for tools, casting idx and category
-      const toolMetadata = toolEventLogs.map((log) => ({
-        ...log.args,
-        idx: BigInt(log.args.idx ?? 0),
-        category: hexToString(log.args.category ?? "0x", { size: 32 }),
-      }));
+      const toolMetadata = toolEventLogs
+        // filter out duplicates by index
+        .filter((log, i, self) => self.findIndex((l) => l.args.idx === log.args.idx) === i)
+        .map((log) => ({
+          ...log.args,
+          idx: BigInt(log.args.idx ?? 0),
+          category: hexToString(log.args.category ?? "0x", { size: 32 }),
+        }));
 
       // read descriptions for each tool
       const toolDescriptions = await client.readContract({
@@ -54,7 +60,8 @@ export const observeToolsAction = (registryAddr: Address, client: ViemClient) =>
       }));
 
       const toolDigestsForLLM = tools.map((tool) => `${tool.idx}. "${tool.name}": ${tool.description}`);
-      return `Tools for ${categories} categories are listed below by their index, name and description:\n${toolDigestsForLLM.join(
+      const categoryMsg = categories.length === 0 ? "all" : categories.join(", ");
+      return `Tools for ${categoryMsg} categories are listed below by their index, name and description:\n${toolDigestsForLLM.join(
         "\n"
       )}`;
     },
