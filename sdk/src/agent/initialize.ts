@@ -78,7 +78,7 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
       // messageSigner,
       observeToolsAction(registryAddress, viemClient),
       observeToolsAbisAction(registryAddress, viemClient),
-      useToolAction(registryAddress, viemClient),
+      useToolAction(viemClient),
     ],
   });
 

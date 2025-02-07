@@ -89,10 +89,11 @@ describe("chain calls", () => {
     expect(tool.abitypes[0]).toBe("function add(int256 a, int256 b) pure returns (int256)");
     const parsedAbi = (parseAbi([tool.abitypes[0]]) as AbiFunction[])[0];
     console.log(parsedAbi);
-    // TODO: is this correct?
+
     const stateMut = parsedAbi.stateMutability;
+
+    // `view` and `pure` are read-only
     if (stateMut === "view" || stateMut === "pure") {
-      // make a call
       const result = await client.readContract({
         address: tool.target,
         abi: [parsedAbi],
@@ -103,7 +104,7 @@ describe("chain calls", () => {
 
       console.log(result);
     } else {
-      // make a transaction
+      // `nonpayable` and `payable` are write-able
       const { request, result } = await client.simulateContract({
         address: tool.target,
         abi: [parsedAbi],
