@@ -1,4 +1,4 @@
-name: CI
+name: Contract Tests
 
 on:
   push:
@@ -15,25 +15,33 @@ jobs:
 
     name: Foundry project
     runs-on: ubuntu-latest
+
+    # run everything in contracts directory
+    defaults:
+      run:
+        working-directory: ./contracts
+
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+        # working-directory: .
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
 
-      - name: Show Forge version
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Show versions
         run: |
           forge --version
+          bun --version
 
-      - name: Run Forge fmt
+      - name: Build
         run: |
-          forge fmt --check
-        id: fmt
-
-      - name: Run Forge build
-        run: |
+          forge install
+          bun install
           forge build --sizes
         id: build
 

@@ -1,23 +1,15 @@
 import { HumanMessage } from "@langchain/core/messages";
 import type { AgentInit } from "../initialize";
 
-/**
- * Run the agent autonomously with specified intervals
- */
-export async function runAutonomousMode(
-  { agent, config }: AgentInit,
-  interval_secs = 10
-) {
+/** Run the agent autonomously with specified intervals. */
+export async function runAutonomousMode({ agent, config }: AgentInit, interval_secs = 10) {
   console.log("Starting autonomous mode...");
   while (true) {
     const thought =
       "Be creative and do something interesting on the blockchain. " +
       "Choose an action or set of actions and execute it that highlights your abilities.";
 
-    const stream = await agent.stream(
-      { messages: [new HumanMessage(thought)] },
-      config
-    );
+    const stream = await agent.stream({ messages: [new HumanMessage(thought)] }, config);
 
     for await (const chunk of stream) {
       if ("agent" in chunk) {

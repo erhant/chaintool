@@ -25,7 +25,7 @@ export async function runChatMode(
     );
 
     for await (const chunk of stream) {
-      console.debug({ chunk });
+      // console.debug({ chunk }); // TODO: what is the type of this thing?
 
       if ("agent" in chunk) {
         console.log(chunk.agent.messages[0].content);

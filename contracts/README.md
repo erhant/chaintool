@@ -1,66 +1,77 @@
-## Foundry
+# Chaintools: Contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This folder contains the contracts & their scripts to deploy & register to `AgentToolRegistry`. The registry is deployed at:
 
-Foundry consists of:
+- **Base Sepolia**: [`0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa`](https://base-sepolia.blockscout.com/address/0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa)
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Installation
 
-## Documentation
+Clone the repository:
 
-https://book.getfoundry.sh/
+```sh
+git clone https://github.com/erhant/chaintools
+cd chaintools/contracts
+```
+
+Install all dependencies:
+
+```sh
+forge install && bun install
+```
+
+We used `solc 0.8.28` as our Solidity compiler.
 
 ## Usage
 
-### Build
+### Deployment & Registration
 
-```shell
-$ forge build
+Deploy the registry with:
+
+```sh
+forge create src/AgentTools.sol:AgentToolRegistry \
+  --rpc-url $RPC_URL --broadcast \
+  --private-key $PRIVATE_KEY
 ```
 
-### Test
+Use the deployment scripts to register (and deploy) tools, for example:
 
-```shell
-$ forge test
+```sh
+REGISTRY=0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa \
+forge script script/Tools.s.sol:$TOOL_NAME_HERE \
+  --rpc-url $RPC_URL --broadcast \
+  --private-key $PRIVATE_KEY
 ```
 
-### Format
+> [!WARNING]
+>
+> Some tools may require extra arguments via env variables, please check the tool script for more detail.
 
-```shell
-$ forge fmt
+### ABIs
+
+Export ABI to clipboard with:
+
+```sh
+forge inspect AgentToolRegistry abi | pbcopy
 ```
 
-### Gas Snapshots
+Setup everything for testing with `setup.sh`.
 
-```shell
-$ forge snapshot
+### Verification
+
+You can verify a contract on Base Sepolia with `forge verify-contract`. For example:
+
+```sh
+forge verify-contract 0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa AgentToolRegistry \
+--verifier blockscout \
+--verifier-url https://base-sepolia.blockscout.com/api/ \
+--compiler-version 0.8.28
+--chain-id 84532
 ```
 
-### Anvil
+### Testing
 
-```shell
-$ anvil
-```
+Test contracts with:
 
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```sh
+forge test
 ```

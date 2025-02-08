@@ -12,3 +12,9 @@ docs/
 
 # Dotenv file
 .env
+
+# Node modules
+node_modules
+
+# private setups
+setup.base-sepolia.sh
