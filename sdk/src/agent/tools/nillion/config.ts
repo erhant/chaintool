@@ -12,8 +12,9 @@ export type NillionOrgConfig = {
   orgCredentials: NillionOrgCredentials;
   nodes: NillionNode[];
 };
+
+// demo org credentials
 export const orgConfig: NillionOrgConfig = {
-  // demo org credentials
   // in a production environment, make sure to put your org's credentials in environment variables
   orgCredentials: {
     secretKey: process.env.NILLION_SECRET_KEY ?? "a786abe58f933e190d01d05b467838abb1e391007a674d8a3aef106e15a0bf5a", // demo

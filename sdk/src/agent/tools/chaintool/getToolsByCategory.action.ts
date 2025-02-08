@@ -1,8 +1,9 @@
+import z from "zod";
 import { customActionProvider, EvmWalletProvider } from "@coinbase/agentkit";
 import { Address, hexToString, stringToHex } from "viem";
+
 import abi from "../../../abis/AgentToolRegistry.abi";
-import z from "zod";
-import { ViemClient } from ".";
+import { ViemCDPClient } from "./client";
 
 const SCHEMA = z.object({
   categories: z
@@ -12,11 +13,10 @@ const SCHEMA = z.object({
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
-// just an example tool from the docs
-export const observeToolsAction = (registryAddr: Address, client: ViemClient) =>
+export const getToolAction = (registryAddr: Address, client: ViemCDPClient) =>
   customActionProvider<EvmWalletProvider>({
-    name: "get_onchain_tools_by_category",
-    description: "Returns the on-chain tools, optionally filtered by given categories.",
+    name: "get_chaintools_by_category",
+    description: "Return Chaintools, optionally filter by given categories.",
     schema: SCHEMA,
     invoke: async (walletProvider, args: SCHEMA) => {
       const { categories } = args;

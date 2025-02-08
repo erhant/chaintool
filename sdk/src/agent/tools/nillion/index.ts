@@ -6,28 +6,6 @@ import { NillionOrgConfig } from "./config";
 // Update SCHEMA_ID to the schema id of your new collection
 const SCHEMA_ID = "🎯UPDATE_ME_WITH_YOUR_SCHEMA_ID";
 
-// Web3 Experience Survey Data to add to the collection
-// $allot signals that the name years_in_web3 field will be encrypted
-// Each node will have a different encrypted $share of encrypted field
-const data = [
-  {
-    name: { $allot: "Vitalik Buterin" }, // will be encrypted to a $share
-    years_in_web3: { $allot: 8 }, // will be encrypted to a $share
-    responses: [
-      { rating: 5, question_number: 1 },
-      { rating: 3, question_number: 2 },
-    ],
-  },
-  {
-    name: { $allot: "Satoshi Nakamoto" }, // will be encrypted to a $share
-    years_in_web3: { $allot: 14 }, // will be encrypted to a $share
-    responses: [
-      { rating: 2, question_number: 1 },
-      { rating: 5, question_number: 2 },
-    ],
-  },
-];
-
 export async function createSchema(orgConfig: NillionOrgConfig, schema: object) {
   try {
     const org = new SecretVaultWrapper(orgConfig.nodes, orgConfig.orgCredentials);
@@ -47,7 +25,7 @@ export async function createSchema(orgConfig: NillionOrgConfig, schema: object) 
   }
 }
 
-export async function writeAndRead(orgConfig: NillionOrgConfig) {
+export async function writeAndRead(orgConfig: NillionOrgConfig, data: object[]) {
   try {
     // Create a secret vault wrapper and initialize the SecretVault collection to use
     const collection = new SecretVaultWrapper(orgConfig.nodes, orgConfig.orgCredentials, SCHEMA_ID);

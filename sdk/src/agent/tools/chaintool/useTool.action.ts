@@ -1,23 +1,22 @@
-import { customActionProvider, EvmWalletProvider } from "@coinbase/agentkit";
-import { AbiFunction, Address, hexToString, parseAbi, isAddress } from "viem";
-import abi from "../../../abis/AgentToolRegistry.abi";
 import z from "zod";
-import { ViemClient } from ".";
+import { customActionProvider, EvmWalletProvider } from "@coinbase/agentkit";
+import { Address, AbiFunction, parseAbi, isAddress } from "viem";
+import { ViemCDPClient } from "./client";
 
 const SCHEMA = z.object({
-  abitype: z.string().describe("The selected function abi type from the tool."),
+  abitype: z.string().describe("The selected function abi type from the tool, must include the entire ABI type."),
   target: z.custom<Address>(isAddress, "Invalid Address").describe("The address of the tool."),
   toolArgs: z.array(z.unknown()).describe("An array of arguments, respecting the function abi type."),
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
 // just an example tool from the docs
-export const useToolAction = (client: ViemClient) =>
+export const useToolAction = (client: ViemCDPClient) =>
   customActionProvider<EvmWalletProvider>({
-    name: "use_onchain_tool",
-    description: "Uses an on-chain tool by calling its function with the given abi type and target.",
+    name: "use_chaintool",
+    description: "Use a Chaintool by calling its function with the given abi type and target.",
     schema: SCHEMA,
-    invoke: async (walletProvider, args: SCHEMA) => {
+    invoke: async (_, args: SCHEMA) => {
       const { target, abitype, toolArgs } = args;
       console.log({ target, abitype, toolArgs });
 

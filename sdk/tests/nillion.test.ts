@@ -19,6 +19,18 @@ import abi from "../src/abis/AgentToolRegistry.abi";
 import { privateKeyToAccount } from "viem/accounts";
 import { tool } from "@langchain/core/tools";
 
+// get tool events from chain for your category
+
+// return the provider
+// return customActionProvider<EvmWalletProvider>({
+//   name: "onchain_tool_checker",
+//   description: "Check on-chain tools.",
+//   schema: SCHEMA,
+//   invoke: async (walletProvider, args: SCHEMA) => {
+//     // TODO: !!!
+//   },
+// });
+
 function createClient(privateKey: Hex) {
   return createWalletClient({
     account: privateKeyToAccount(privateKey),

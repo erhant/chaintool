@@ -130,8 +130,10 @@ contract AgentToolRegistry is Ownable {
         });
         tools.push(tool);
 
-        // emit events for each category
+        // store idx & emit events for each category
         for (uint256 i = 0; i < categories.length; i++) {
+            toolIdxsByCategory[categories[i]].push(idx);
+
             emit ToolRegistered(idx, name, target, owner, categories[i]);
         }
     }

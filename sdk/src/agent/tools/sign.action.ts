@@ -15,6 +15,6 @@ export const messageSigner = customActionProvider<EvmWalletProvider>({
     const { message } = args;
     const signature = await walletProvider.signMessage(message);
 
-    return `The payload signature ${signature}`;
+    return `The payload signature: ${signature}`;
   },
 });
