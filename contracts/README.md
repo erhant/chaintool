@@ -1,4 +1,4 @@
-# Chaintools: Contracts
+# Chaintool: Contracts
 
 This folder contains the contracts & their scripts to deploy & register to `AgentToolRegistry`. The registry is deployed at:
 

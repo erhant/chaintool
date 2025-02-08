@@ -1,4 +1,4 @@
-# Chaintools: SDK
+# Chaintool: SDK
 
 This folder contains the main AgentKit logic & actions.
 
