@@ -25,14 +25,14 @@ const SCHEMA = z.object({
 type SCHEMA = z.infer<typeof SCHEMA>;
 
 // just an example tool from the docs
-export const useToolAction = (client: ViemCDPClient) =>
+export const useChaintoolAction = (client: ViemCDPClient) =>
   customActionProvider<EvmWalletProvider>({
     name: "use_chaintool",
     description: "Use a Chaintool by calling its function with the given abi type and target.",
     schema: SCHEMA,
     invoke: async (_, args: SCHEMA) => {
       const { target, abitype, toolArgs, value } = args;
-      console.log({ tool: "useToolAction", target, abitype, toolArgs, value });
+      console.log({ tool: "use_chaintool", target, abitype, toolArgs, value });
 
       const parsedAbi = (parseAbi([abitype]) as AbiFunction[])[0];
 

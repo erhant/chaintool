@@ -11,14 +11,14 @@ const SCHEMA = z.object({
 type SCHEMA = z.infer<typeof SCHEMA>;
 
 // just an example tool from the docs
-export const getToolByIndexAction = (registryAddr: Address, client: ViemCDPClient) =>
+export const getChaintoolByIndexAction = (registryAddr: Address, client: ViemCDPClient) =>
   customActionProvider<EvmWalletProvider>({
     name: "get_chaintool_by_index",
     description: "Returns the details of a Chaintool at the given index, to further list its functionalities.",
     schema: SCHEMA,
     invoke: async (_, args: SCHEMA) => {
       const { toolIndex } = args;
-      console.log({ tool: "getToolByIndexAction", toolIndex });
+      console.log({ tool: "get_chaintool_by_index", toolIndex });
 
       // make a call with its abi
       const tool = await client.readContract({

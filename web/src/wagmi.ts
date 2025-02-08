@@ -16,8 +16,9 @@ export const config = createConfig(
 
     appName: "Chaintool",
     appDescription: "View chaintool tools online.",
-    appUrl: "https://family.co",
-    appIcon: "https://family.co/logo.png",
+    appUrl: "https://github.com/erhant/chaintools",
+    appIcon:
+      "https://raw.githubusercontent.com/erhant/chaintools/refs/heads/main/misc/logo.png",
   })
 );
 

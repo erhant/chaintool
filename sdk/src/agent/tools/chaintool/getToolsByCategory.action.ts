@@ -13,7 +13,7 @@ const SCHEMA = z.object({
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
-export const getToolsByCategory = (registryAddr: Address, client: ViemCDPClient) =>
+export const getChaintoolsByCategory = (registryAddr: Address, client: ViemCDPClient) =>
   customActionProvider<EvmWalletProvider>({
     name: "get_chaintools_by_category",
     description: "Return Chaintools, optionally filter by given categories.",

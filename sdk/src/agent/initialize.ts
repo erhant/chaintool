@@ -11,9 +11,9 @@ import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import fs from "fs";
-import { getToolsByCategory } from "./tools/chaintool/getToolsByCategory.action";
-import { getToolByIndexAction } from "./tools/chaintool/getToolByIndex.action";
-import { useToolAction } from "./tools/chaintool/useTool.action";
+import { getChaintoolsByCategory } from "./tools/chaintool/getToolsByCategory.action";
+import { getChaintoolByIndexAction } from "./tools/chaintool/getToolByIndex.action";
+import { useChaintoolAction } from "./tools/chaintool/useTool.action";
 import { createViemClient, ViemCDPChains } from "./tools/chaintool";
 import { Address, Hex } from "viem";
 import { z } from "zod";
@@ -116,9 +116,9 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
         apiKeyPrivateKey: cdpConfig.apiKeyPrivateKey,
       }),
       // messageSigner,
-      getToolsByCategory(registryAddress, viemClient),
-      getToolByIndexAction(registryAddress, viemClient),
-      useToolAction(viemClient),
+      getChaintoolsByCategory(registryAddress, viemClient),
+      getChaintoolByIndexAction(registryAddress, viemClient),
+      useChaintoolAction(viemClient),
     ],
   });
 

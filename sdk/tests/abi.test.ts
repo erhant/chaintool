@@ -3,6 +3,7 @@ import { AbiFunction, encodeFunctionData, parseAbi } from "viem";
 
 describe("abi encodings", () => {
   const VITALIK_ADDR = "0xd8da6bf26964af9d7eed9e03e53415d37aa96045";
+
   test("addition", () => {
     const ABI: string[] = ["function add(int256 a, int256 b) pure returns (int256 c)"];
     const parsedAbi = parseAbi(ABI) as AbiFunction[];

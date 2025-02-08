@@ -21,13 +21,13 @@ async function main() {
   });
 
   try {
-    const agentInit = await initializeAgent(CDP_MPC_WALLET_PATH, "gpt-4o-mini", "CDP Example Agent");
+    const agentInit = await initializeAgent(CDP_MPC_WALLET_PATH, "gpt-4o", "CDP Example Agent");
 
     const question = (prompt: string): Promise<string> => new Promise((resolve) => rl.question(prompt, resolve));
 
     let exit = false;
     while (!exit) {
-      console.log("Select an option:");
+      console.log("\nSelect an option:");
       console.log("chat\tInteractively chat with your Agent.");
       console.log("auto\tLet your agent loose, make it autonomous.");
       console.log("exit\tQuit the agent (CTRL+C works too).");

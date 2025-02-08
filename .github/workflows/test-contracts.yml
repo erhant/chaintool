@@ -1,4 +1,4 @@
-name: Contract Tests
+name: contracts
 
 on:
   push:
