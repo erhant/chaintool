@@ -1,12 +1,26 @@
 import z from "zod";
 import { customActionProvider, EvmWalletProvider } from "@coinbase/agentkit";
-import { Address, AbiFunction, parseAbi, isAddress } from "viem";
+import { Address, AbiFunction, parseAbi, isAddress, parseEther } from "viem";
 import { ViemCDPClient } from "./client";
 
 const SCHEMA = z.object({
   abitype: z.string().describe("The selected function abi type from the tool, must include the entire ABI type."),
-  target: z.custom<Address>(isAddress, "Invalid Address").describe("The address of the tool."),
-  toolArgs: z.array(z.unknown()).describe("An array of arguments, respecting the function abi type."),
+  target: z
+    .custom<Address>((d) => isAddress(d, { strict: false }), "Invalid Address")
+    .describe("The address of the tool."),
+  toolArgs: z.array(z.unknown()).optional().describe("An array of arguments, respecting the function abi type."),
+  value: z
+    .string()
+    .refine((s) => {
+      try {
+        parseEther(s);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "not an ether value")
+    .optional()
+    .describe("The value to send with the transaction (optional) in ether units."),
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
@@ -17,8 +31,8 @@ export const useToolAction = (client: ViemCDPClient) =>
     description: "Use a Chaintool by calling its function with the given abi type and target.",
     schema: SCHEMA,
     invoke: async (_, args: SCHEMA) => {
-      const { target, abitype, toolArgs } = args;
-      console.log({ tool: "useToolAction", target, abitype, toolArgs });
+      const { target, abitype, toolArgs, value } = args;
+      console.log({ tool: "useToolAction", target, abitype, toolArgs, value });
 
       const parsedAbi = (parseAbi([abitype]) as AbiFunction[])[0];
 
@@ -42,10 +56,16 @@ export const useToolAction = (client: ViemCDPClient) =>
           abi: [parsedAbi],
           functionName: parsedAbi.name,
           args: toolArgs,
+          value: value ? parseEther(value) : undefined,
         });
-        // TODO: mine tx as well
         console.log(result);
-        return `Function "${parsedAbi.name}" called with args ${toolArgs} returned: ${result}`;
+
+        const txHash = await client.writeContract(request);
+
+        console.log("Waiting for tx receipt for:", txHash);
+        await client.waitForTransactionReceipt({ hash: txHash });
+
+        return `Function "${parsedAbi.name}" called with args ${toolArgs} and mined in tx ${txHash} returned: ${result}`;
       }
     },
   });

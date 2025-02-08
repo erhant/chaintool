@@ -5,6 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {AgentToolRegistry} from "../src/AgentTools.sol";
 
 import {AddTool} from "../src/tools/AddTool.sol";
+import {SayHiTool} from "../src/tools/SayHiTool.sol";
 
 contract NewAddTool is Script {
     function run() public {
@@ -89,6 +90,21 @@ contract NewWETHTool is Script {
             0x4200000000000000000000000000000000000006,
             msg.sender
         );
+
+        vm.stopBroadcast();
+    }
+}
+
+/// @dev Registers a tool that allows agents to let us know that they are here!
+contract NewSayHiTool is Script {
+    function run() public {
+        address registryAddress = vm.envAddress("REGISTRY");
+        require(registryAddress != address(0), "Invalid registry address");
+
+        vm.startBroadcast();
+
+        SayHiTool sayHiTool = new SayHiTool(registryAddress);
+        sayHiTool.register();
 
         vm.stopBroadcast();
     }

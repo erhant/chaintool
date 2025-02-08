@@ -8,19 +8,19 @@ import { ViemCDPClient } from "./client";
 const SCHEMA = z.object({
   categories: z
     .array(z.string())
-    .transform((vals) => vals.filter((s) => !(s === "" || s === "all"))) // LLM loves this so we prevent it here
+    .transform((vals) => vals.map((s) => s.toLowerCase()).filter((s) => !(s === "" || s === "all"))) // LLM loves this so we prevent it here
     .describe("The category of tools to get, leave empty to get all tools."),
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
-export const getToolAction = (registryAddr: Address, client: ViemCDPClient) =>
+export const getToolsByCategory = (registryAddr: Address, client: ViemCDPClient) =>
   customActionProvider<EvmWalletProvider>({
     name: "get_chaintools_by_category",
     description: "Return Chaintools, optionally filter by given categories.",
     schema: SCHEMA,
     invoke: async (walletProvider, args: SCHEMA) => {
       const { categories } = args;
-      console.log({ tool: "getToolByIndexAction", categories });
+      console.log({ tool: "get_chaintools_by_category", categories });
 
       // map to `bytes32`
       const bytes32categories = categories.map((c) => stringToHex(c, { size: 32 }));
@@ -33,7 +33,7 @@ export const getToolAction = (registryAddr: Address, client: ViemCDPClient) =>
         args: {
           category: bytes32categories.length === 0 ? null : bytes32categories,
         },
-        fromBlock: "earliest", // this is important
+        fromBlock: 21635860n, // just before the contract was deployed on base-sepolia
       });
 
       const toolMetadata = toolEventLogs

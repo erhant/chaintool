@@ -11,11 +11,11 @@ import { MemorySaver } from "@langchain/langgraph";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatOpenAI } from "@langchain/openai";
 import fs from "fs";
-import { getToolAction } from "./tools/chaintool/getToolsByCategory.action";
+import { getToolsByCategory } from "./tools/chaintool/getToolsByCategory.action";
 import { getToolByIndexAction } from "./tools/chaintool/getToolByIndex.action";
 import { useToolAction } from "./tools/chaintool/useTool.action";
 import { createViemClient, ViemCDPChains } from "./tools/chaintool";
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { z } from "zod";
 import { anvil, base, baseSepolia } from "viem/chains";
 
@@ -44,33 +44,40 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
   const llm = new ChatOpenAI({ model });
 
   // Read existing wallet data if available
-  let walletDataStr: string | undefined = undefined;
+  let walletDataStr: string;
   if (fs.existsSync(walletDataPath)) {
-    try {
-      walletDataStr = fs.readFileSync(walletDataPath, "utf8");
-    } catch (error) {
-      console.error("Error reading wallet data:", error);
-      // TODO: create & store CPD wallet data
-      // Continue without wallet data
-      throw new Error("TODO: !!!");
-    }
+    walletDataStr = fs.readFileSync(walletDataPath, "utf8");
+  } else {
+    const cdpConfig: NonNullable<Parameters<typeof CdpWalletProvider.configureWithWallet>[0]> = {
+      apiKeyName: process.env.CDP_API_KEY_NAME,
+      apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+      cdpWalletData: undefined,
+      networkId: process.env.NETWORK_ID ?? "base-sepolia",
+    };
+
+    // create wallet providers
+    const cdpWalletProvider = await CdpWalletProvider.configureWithWallet(cdpConfig);
+    const walletData = await cdpWalletProvider.exportWallet();
+    walletDataStr = JSON.stringify(walletData);
+
+    // save wallet data for later usage
+    fs.writeFileSync(walletDataPath, walletDataStr);
   }
 
-  const cdpWalletData = CdpWalletDataSchema.parse(JSON.parse(walletDataStr || "TODO: !!!"));
+  const cdpWalletData = CdpWalletDataSchema.parse(JSON.parse(walletDataStr));
 
   let chain: ViemCDPChains;
+  let registryAddress: Address;
   const networkId = process.env.NETWORK_ID || cdpWalletData.networkId;
   switch (networkId) {
-    case "anvil": {
-      chain = anvil;
-      break;
-    }
-    case "base": {
+    case "base-mainnet": {
       chain = base;
+      throw new Error("A registry on Base is not yet deployed");
       break;
     }
     case "base-sepolia": {
       chain = baseSepolia;
+      registryAddress = "0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa";
       break;
     }
     default: {
@@ -88,16 +95,12 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
   };
 
   // create wallet providers
+  console.log("Creating CDP provider.");
   const cdpWalletProvider = await CdpWalletProvider.configureWithWallet(cdpConfig);
+  console.log("Creating Viem client.");
   const viemClient = createViemClient(Buffer.from(cdpWalletData.seed, "hex"), chain);
-  console.log(viemClient.account.address);
-
-  // Save wallet data
-  const exportedWallet = await cdpWalletProvider.exportWallet();
-  fs.writeFileSync(walletDataPath, JSON.stringify(exportedWallet));
-
-  const registryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
+  console.log("Agent address:", viemClient.account.address);
+  console.log("Registry address:", registryAddress);
   // initialize AgentKit
   const agentkit = await AgentKit.from({
     walletProvider: cdpWalletProvider,
@@ -113,7 +116,7 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
         apiKeyPrivateKey: cdpConfig.apiKeyPrivateKey,
       }),
       // messageSigner,
-      getToolAction(registryAddress, viemClient),
+      getToolsByCategory(registryAddress, viemClient),
       getToolByIndexAction(registryAddress, viemClient),
       useToolAction(viemClient),
     ],

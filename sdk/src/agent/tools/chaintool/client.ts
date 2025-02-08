@@ -7,10 +7,13 @@ import { hdKeyToAccount, HDKey } from "viem/accounts";
 export type ViemCDPClient = ReturnType<typeof createViemClient>;
 
 /** Supported chains. */
-export type ViemCDPChains = typeof anvil | typeof baseSepolia | typeof base;
+export type ViemCDPChains = typeof baseSepolia | typeof base;
 
 /**
  * Create a Viem client with the given master seed (from CDP) and a chain.
+ *
+ * The chain must belong to one of the chains liset at: <https://docs.cdp.coinbase.com/cdp-apis/docs/networks>.
+ *
  * @param masterSeed seed for HD wallet, can be obtained from CDP MPC Wallet data
  * @param chain chain to connect to (must be: anvil or baseSepolia)
  * @returns a Viem wallet client with extended public actions
@@ -18,7 +21,7 @@ export type ViemCDPChains = typeof anvil | typeof baseSepolia | typeof base;
 export function createViemClient(masterSeed: Uint8Array, chain: ViemCDPChains) /* infer */ {
   return createWalletClient({
     account: hdKeyToAccount(HDKey.fromMasterSeed(masterSeed)),
-    chain,
-    transport: chain.name === "Anvil" ? http("http://localhost:8545") : http(),
+    chain: chain,
+    transport: http(),
   }).extend(publicActions);
 }

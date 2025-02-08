@@ -21,7 +21,7 @@ forge create src/AgentTools.sol:AgentToolRegistry --broadcast \
   --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 # fund your agent
-cast send 0x4bF825602483D9D4f8f46CC0cc2d02272BD4909C --value 1ether \
+cast send 0x45bea8DF9c39F6F59F4b2a5439e8efcA390673B9 --value 1ether \
   --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 # register AddTool
