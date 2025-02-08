@@ -65,11 +65,24 @@ const ToolMenu: FC = () => {
   return (
     <div>
       <Stack>
-        <Text size="xl">View Chaintools</Text>
+        <div>
+          <Text size="xl">View Chaintools</Text>
+          <Text mt="xs">
+            Type the categories you want to search for, and click search to view
+            the respective tools. You can click search right away to view all
+            tools!
+          </Text>
+
+          <Text mt="xs">
+            When you find a tool you want to explore, click on its index to view
+            its details and functions.
+          </Text>
+        </div>
+
         <TextInput
           label="Chaintool Categories"
-          description="Enter categories to search, comma separated. (e.g. defi,erc20,misc)"
-          placeholder="defi, erc20, misc"
+          description="Enter categories to search, comma separated without spaces."
+          placeholder="defi,erc20,misc"
           value={categories.join(", ")}
           onChange={(event) =>
             setCategories(
@@ -96,9 +109,7 @@ const ToolMenu: FC = () => {
 
       {/* show tools w.r.t category */}
       {tools.length === 0 ? (
-        <Text size="xl" ta="center">
-          No tools selected
-        </Text>
+        <></>
       ) : (
         <div>
           <Text size="xl" ta="center"></Text>

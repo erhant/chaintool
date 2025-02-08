@@ -26,7 +26,7 @@ We have three components in this monorepo:
 
 - [AgentKit SDK](./sdk/)
 - [Contracts](./contracts/)
-- [Frontend](./web/)
+- [Frontend](./web/) deployed at <https://chaintool.vercel.app/>
 
 ## Examples
 
@@ -34,7 +34,7 @@ See example usage of Chaintools with AgentKit [here](./sdk/README.md#usage).
 
 ## Methodology
 
-A [Chaintool](https://github.com/erhant/chaintools/blob/main/contracts/src/AgentTools.sol#L8) is defined by a Solidity struct, and is handled by the `AgentToolRegistry` contract. Each struct identifies an agentic tool with the following fields:
+A **Chaintool** is defined by a [Solidity struct](https://github.com/erhant/chaintools/blob/main/contracts/src/AgentTools.sol#L8), and is handled by the `AgentToolRegistry` contract. Each struct identifies an agentic tool with the following fields:
 
 - `idx`: tool index, can be used to read details of a tool
 - `name`: a short & descriptive tool name.

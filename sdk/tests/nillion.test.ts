@@ -1,148 +1,129 @@
 import { beforeAll, describe, expect, test } from "bun:test";
-import {
-  AbiFunction,
-  bytesToString,
-  createPublicClient,
-  createWalletClient,
-  encodeAbiParameters,
-  encodeFunctionData,
-  fromBytes,
-  Hex,
-  hexToString,
-  http,
-  parseAbi,
-  publicActions,
-  PublicClient,
-} from "viem";
-import { anvil } from "viem/chains";
-import abi from "../src/abis/AgentToolRegistry.abi";
-import { privateKeyToAccount } from "viem/accounts";
-import { tool } from "@langchain/core/tools";
+import { createNillionSchema, writeAndRead } from "../src/agent/tools/nillion";
 
-// get tool events from chain for your category
+const nillionSchema = {
+  $schema: "http://json-schema.org/draft-07/schema#",
+  title: "Web3 Experience Survey",
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      _id: {
+        type: "string",
+        format: "uuid",
+        coerce: true,
+      },
+      name: {
+        type: "object",
+        properties: {
+          $share: {
+            type: "string",
+          },
+        },
+        required: ["$share"],
+      },
+      years_in_web3: {
+        type: "object",
+        properties: {
+          $share: {
+            type: "string",
+          },
+        },
+        required: ["$share"],
+      },
+      responses: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            rating: {
+              type: "integer",
+              minimum: 1,
+              maximum: 5,
+            },
+            question_number: {
+              type: "integer",
+              minimum: 1,
+            },
+          },
+          required: ["rating", "question_number"],
+        },
+        minItems: 1,
+      },
+    },
+    required: ["_id", "name", "years_in_web3", "responses"],
+  },
+} as const;
 
-// return the provider
-// return customActionProvider<EvmWalletProvider>({
-//   name: "onchain_tool_checker",
-//   description: "Check on-chain tools.",
-//   schema: SCHEMA,
-//   invoke: async (walletProvider, args: SCHEMA) => {
-//     // TODO: !!!
-//   },
-// });
+export type NillionOrgCredentials = {
+  secretKey: string;
+  orgDid: string;
+};
 
-function createClient(privateKey: Hex) {
-  return createWalletClient({
-    account: privateKeyToAccount(privateKey),
-    chain: anvil,
-    transport: http(),
-  }).extend(publicActions);
-}
+export type NillionNode = {
+  url: string;
+  did: string;
+};
 
-describe("on-chain tools", () => {
-  const registryAddr = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-  let client: ReturnType<typeof createClient>;
+export type NillionOrgConfig = {
+  orgCredentials: NillionOrgCredentials;
+  nodes: NillionNode[];
+};
 
-  beforeAll(() => {
-    client = createClient("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
+// demo org credentials
+export const orgConfig: NillionOrgConfig = {
+  // in a production environment, make sure to put your org's credentials in environment variables
+  orgCredentials: {
+    secretKey: process.env.NILLION_SECRET_KEY ?? "a786abe58f933e190d01d05b467838abb1e391007a674d8a3aef106e15a0bf5a", // demo
+    orgDid: process.env.NILLION_ORG_ID ?? "did:nil:testnet:nillion1vn49zpzgpagey80lp4xzzefaz09kufr5e6zq8c", // demo
+  },
+  // demo node config
+  nodes: [
+    {
+      url: "https://nildb-zy8u.nillion.network",
+      did: "did:nil:testnet:nillion1fnhettvcrsfu8zkd5zms4d820l0ct226c3zy8u",
+    },
+    {
+      url: "https://nildb-rl5g.nillion.network",
+      did: "did:nil:testnet:nillion14x47xx85de0rg9dqunsdxg8jh82nvkax3jrl5g",
+    },
+    {
+      url: "https://nildb-lpjp.nillion.network",
+      did: "did:nil:testnet:nillion167pglv9k7m4gj05rwj520a46tulkff332vlpjp",
+    },
+  ],
+};
+
+describe("nillion example", () => {
+  let schemaId: string = "33a26de1-d663-45aa-b699-ebc8d0bf09f4";
+
+  test("create schema", async () => {
+    schemaId = await createNillionSchema(orgConfig, nillionSchema);
+    console.log("schema-id:", schemaId);
+    // schema-id: 33a26de1-d663-45aa-b699-ebc8d0bf09f4
   });
 
-  test("all tools", async () => {
-    // get tools via events
-    const toolEventLogs = await client.getContractEvents({
-      address: registryAddr,
-      abi,
-      eventName: "ToolRegistered",
-      // args: filter,
-      fromBlock: "earliest",
-    });
-
-    // get metadata for tools, casting idx and category
-    const toolMetadata = toolEventLogs.map((log) => ({
-      ...log.args,
-      idx: BigInt(log.args.idx ?? 0), // TODO: ?? done due to undefined thing
-      category: hexToString(log.args.category ?? "0x", { size: 32 }),
-    }));
-
-    console.log(toolMetadata);
-  });
-
-  test("addition", async () => {
-    // get tools via events
-    const toolEventLogs = await client.getContractEvents({
-      address: registryAddr,
-      abi,
-      eventName: "ToolRegistered",
-      // args: filter,
-    });
-
-    // get metadata for tools, casting idx and category
-    const toolMetadata = toolEventLogs.map((log) => ({
-      ...log.args,
-      idx: BigInt(log.args.idx ?? 0), // TODO: ?? done due to undefined thing
-      category: hexToString(log.args.category ?? "0x", { size: 32 }),
-    }));
-
-    // read descriptions for each tool
-    const toolDescriptions = await client.readContract({
-      address: registryAddr,
-      abi,
-      functionName: "getDescriptions",
-      args: [toolMetadata.map((tool) => tool.idx)],
-    });
-
-    // zip metadata with descriptions
-    const tools = toolMetadata.map((tool, i) => ({
-      ...tool,
-      description: toolDescriptions[i],
-    }));
-
-    // make a call with its abi
-    const tool = await client.readContract({
-      address: registryAddr,
-      abi,
-      functionName: "getTool",
-      args: [tools[0].idx],
-    });
-    console.log({ tool });
-
-    expect(tool.abitypes[0]).toBe("function add(int256 a, int256 b) pure returns (int256)");
-    const parsedAbi = (parseAbi([tool.abitypes[0]]) as AbiFunction[])[0];
-    console.log(parsedAbi);
-
-    const stateMut = parsedAbi.stateMutability;
-
-    // `view` and `pure` are read-only
-    if (stateMut === "view" || stateMut === "pure") {
-      const result = await client.readContract({
-        address: tool.target,
-        abi: [parsedAbi],
-        functionName: parsedAbi.name,
-        // in this case we are calling `add` so its two numbers
-        args: [4, 5],
-      });
-
-      console.log(result);
-    } else {
-      // `nonpayable` and `payable` are write-able
-      const { request, result } = await client.simulateContract({
-        address: tool.target,
-        abi: [parsedAbi],
-        functionName: parsedAbi.name,
-        args: [4n, 5n],
-      });
-      console.log(result);
-      const txHash = await client.writeContract(request);
-    }
-    // const calldata = encodeFunctionData({
-    //   // abi: parseAbi(["function add(int256 a, int256 b) pure returns (int256)"]),
-    //   abi: parsedAbi as any, // any-cast due to dynamic abis
-    //   functionName: "add",
-    //   args: [BigInt(1), BigInt(2)],
-    // });
-
-    // expect(calldata).toBe(
-    //   "0xa5f3c23b00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002"
-    // );
+  test("write and read", async () => {
+    // Web3 Experience Survey Data to add to the collection
+    // $allot signals that the name years_in_web3 field will be encrypted
+    // Each node will have a different encrypted $share of encrypted field
+    await writeAndRead(orgConfig, schemaId, [
+      {
+        name: { $allot: "Vitalik Buterin" }, // will be encrypted to a $share
+        years_in_web3: { $allot: 8 }, // will be encrypted to a $share
+        responses: [
+          { rating: 5, question_number: 1 },
+          { rating: 3, question_number: 2 },
+        ],
+      },
+      {
+        name: { $allot: "Satoshi Nakamoto" }, // will be encrypted to a $share
+        years_in_web3: { $allot: 14 }, // will be encrypted to a $share
+        responses: [
+          { rating: 2, question_number: 1 },
+          { rating: 5, question_number: 2 },
+        ],
+      },
+    ]);
   });
 });

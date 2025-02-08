@@ -1,7 +1,7 @@
 // https://ethglobal.com/events/agents/prizes#nillion
 // https://docs.nillion.com/build/secret-vault-quickstart
 
-export default {
+const nillionSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   title: "Web3 Experience Survey",
   type: "array",
