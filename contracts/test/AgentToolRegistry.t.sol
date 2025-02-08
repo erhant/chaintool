@@ -62,9 +62,6 @@ contract AgentToolRegistryTest is Test {
         indexes[1] = 1;
         string[] memory descs = registry.getDescriptions(indexes);
         assertEq(descs.length, 2);
-        // TODO: !!!
-        // assertEq(keccak256(abi.encodePacked(descs[0])), keccak256(abi.encodePacked(addTool.desc)));
-        // assertEq(keccak256(abi.encodePacked(descs[1])), keccak256(abi.encodePacked(addTool.desc)));
     }
 
     function test_FailOnNonFunctionAbi() public {

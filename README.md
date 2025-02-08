@@ -1,26 +1,28 @@
-# Re-agent
+<p align="center">
+  <h1 align="center">
+    Chaintool
+  </h1>
+  <p align="center"><i>On-chain & dynamic toolchain for CDP AgentKit.</i></p>
+</p>
 
-An Agent that can create more agents like itself, based on [CDP](https://portal.cdp.coinbase.com/) and [AgentKit](https://docs.cdp.coinbase.com/agentkit/docs/welcome). The repo is based on [this example](https://docs.cdp.coinbase.com/agentkit/docs/quickstart#starting-from-scratch-with-langchain) and [this doc](https://docs.cdp.coinbase.com/agentkit/docs/add-agent-capabilities#add-custom-functionality-using-ai-or-manually).
+<p align="center">
+    <a href="./.github/workflows/test-contracts.yml" target="_blank">
+        <img alt="Workflow: Contracts" src="https://github.com/erhant/chaintools/actions/workflows/test-contracts.yml/badge.svg">
+    </a>
+    <a href="https://opensource.org/licenses/MIT" target="_blank">
+        <img src="https://img.shields.io/badge/license-MIT-blue.svg">
+    </a>
+</p>
 
-Chaintool at: 0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa (0.8.28)
+**Chaintools** is an EVM-compatible _Smart Contract_ & _AgentKit_ [action](https://github.com/coinbase/agentkit/blob/master/CONTRIBUTING-TYPESCRIPT.md#adding-an-action-provider) implementation, based on [CDP](https://portal.cdp.coinbase.com/) with [AgentKit](https://docs.cdp.coinbase.com/agentkit/docs/welcome) and [OnchainKit](https://onchainkit.xyz/getting-started). It allows Agents to access a wide variety of agentic-tools via the `AgentToolRegistry` contract, where registered tools can be queried per category.
 
-verified with:
+Agents can read descriptions of tools (similar to how they do for local tools) and decide to use an on-chain tool. After deciding a tool, they can read the human-readable abitypes for that tool, and actually make a contract `call`/`send` depending on which function they want to use.
 
-forge verify-contract 0x41803f815c0969E04D2414709f8fA416E30c1398 AddTool \
---verifier blockscout \
---verifier-url https://base-sepolia.blockscout.com/api/ \
---compiler-version 0.8.28
---chain-id 84532
-
-## Setup
-
-1. Create CDP API key, store in env
-2. Set OPENAI API KEY in your env
-3. Choose network
+Tools can be added by anyone (although authorization is very easy to add), and agents can use these dynamically added tools while they are running; even if they didn't have access to them before. This avenues many possibilities to Agentic tools and their creators, e.g. tool marketplaces, tool-usage based reward mechanisms and so on!
 
 ## On-Chain Tool Calling
 
-AgentKit supports tools within the code. This project aims to improve upon this by providing a tool-calling mechanism that is fed on-chain! This on-chain tool will be parsed by a single custom [action](https://github.com/coinbase/agentkit/blob/master/CONTRIBUTING-TYPESCRIPT.md#adding-an-action-provider).
+AgentKit supports tools within the code. This project aims to improve upon this by providing a tool-calling mechanism that is fed on-chain! This on-chain tool will be parsed by a single custom .
 
 Here is a chat flow:
 
