@@ -3,7 +3,7 @@ import { useAccount } from "wagmi";
 import Header from "./Header";
 import type { FC } from "react";
 
-import Register from "./ViewTools";
+import Register from "./ToolMenu";
 import Footer from "./Footer";
 
 const Home: FC = () => {

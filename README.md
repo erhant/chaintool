@@ -28,9 +28,13 @@ We have three components in this monorepo:
 - [Contracts](./contracts/)
 - [Frontend](./web/)
 
+## Examples
+
+See example usage of Chaintools with AgentKit [here](./sdk/README.md#usage).
+
 ## Methodology
 
-A Chaintool [agentic tool](https://github.com/erhant/chaintools/blob/main/contracts/src/AgentTools.sol#L8) is a Solidity struct that is handled by the `AgentToolRegistry` contract. Each struct identifies an agentic tool with the following fields:
+A [Chaintool](https://github.com/erhant/chaintools/blob/main/contracts/src/AgentTools.sol#L8) is defined by a Solidity struct, and is handled by the `AgentToolRegistry` contract. Each struct identifies an agentic tool with the following fields:
 
 - `idx`: tool index, can be used to read details of a tool
 - `name`: a short & descriptive tool name.
@@ -68,30 +72,6 @@ Agents can read descriptions of tools (similar to how they do for local tools) a
 
 Tools can be added by anyone for the current implementation, but it is trivial to add an arbitrary authorization mechanism to the registry contract. This avenues many possibilities to Agentic tools and their creators, e.g. tool marketplaces, tool-usage based reward mechanisms and so on!
 
-## Examples
+## License
 
-Here is a chat flow:
-
-```diff
-- First, fetch all chaintools for me.
-+ AI uses `observeTools` action.
-  ...
-- Please get the details of the "Add" chaintool.
-+ AI uses `observeToolAbis` action.
-  ...
-- Use this tool to add numbers 5 and 9 please.
-+ AI uses `useTool` action.
-```
-
-Here is another
-
-```diff
-- Find all chaintools we have online.
-+ AI uses `observeTools` action.
-  ...
-- Get details of "Tea Token" chaintool
-+ AI uses `observeToolAbis` action.
-  ...
-- Tell me the Tea Token balance of address 0x5FbDB2315678afecb367f032d93F642f64180aa3
-+ AI uses `useTool` action.
-```
+Chaintool is MIT-licensed.
