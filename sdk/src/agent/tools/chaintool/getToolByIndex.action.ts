@@ -18,8 +18,7 @@ export const getToolByIndexAction = (registryAddr: Address, client: ViemCDPClien
     schema: SCHEMA,
     invoke: async (_, args: SCHEMA) => {
       const { toolIndex } = args;
-
-      console.log("Checking tool index", toolIndex);
+      console.log({ tool: "getToolByIndexAction", toolIndex });
 
       // make a call with its abi
       const tool = await client.readContract({
@@ -28,9 +27,8 @@ export const getToolByIndexAction = (registryAddr: Address, client: ViemCDPClien
         functionName: "getTool",
         args: [BigInt(toolIndex)],
       });
-      console.log({ tool });
 
-      return `The tool: ${tool.name} at address ${
+      return `The tool: "${tool.name}" at address ${
         tool.target
       } has the following functions defined by their ABI types:\n${tool.abitypes.map((s) => ` - \`${s}\``).join("\n")}`;
     },

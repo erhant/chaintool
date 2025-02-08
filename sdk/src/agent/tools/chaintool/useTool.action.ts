@@ -18,10 +18,9 @@ export const useToolAction = (client: ViemCDPClient) =>
     schema: SCHEMA,
     invoke: async (_, args: SCHEMA) => {
       const { target, abitype, toolArgs } = args;
-      console.log({ target, abitype, toolArgs });
+      console.log({ tool: "useToolAction", target, abitype, toolArgs });
 
       const parsedAbi = (parseAbi([abitype]) as AbiFunction[])[0];
-      console.log(parsedAbi);
 
       const stateMut = parsedAbi.stateMutability;
       if (stateMut === "view" || stateMut === "pure") {

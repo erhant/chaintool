@@ -20,7 +20,7 @@ export const getToolAction = (registryAddr: Address, client: ViemCDPClient) =>
     schema: SCHEMA,
     invoke: async (walletProvider, args: SCHEMA) => {
       const { categories } = args;
-      console.log("Checking tools in categories:", categories);
+      console.log({ tool: "getToolByIndexAction", categories });
 
       // map to `bytes32`
       const bytes32categories = categories.map((c) => stringToHex(c, { size: 32 }));

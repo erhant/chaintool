@@ -14,10 +14,10 @@ import fs from "fs";
 import { getToolAction } from "./tools/chaintool/getToolsByCategory.action";
 import { getToolByIndexAction } from "./tools/chaintool/getToolByIndex.action";
 import { useToolAction } from "./tools/chaintool/useTool.action";
-import { createViemClient } from "./tools/chaintool";
+import { createViemClient, ViemCDPChains } from "./tools/chaintool";
 import { Hex } from "viem";
 import { z } from "zod";
-import { anvil } from "viem/chains";
+import { anvil, base, baseSepolia } from "viem/chains";
 
 // list of allowed models for this agent
 const OpenAIModel = ["gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"] as const;
@@ -58,17 +58,39 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
 
   const cdpWalletData = CdpWalletDataSchema.parse(JSON.parse(walletDataStr || "TODO: !!!"));
 
+  let chain: ViemCDPChains;
+  const networkId = process.env.NETWORK_ID || cdpWalletData.networkId;
+  switch (networkId) {
+    case "anvil": {
+      chain = anvil;
+      break;
+    }
+    case "base": {
+      chain = base;
+      break;
+    }
+    case "base-sepolia": {
+      chain = baseSepolia;
+      break;
+    }
+    default: {
+      throw new Error("Invalid network ID: " + networkId);
+    }
+  }
+  console.log("Using chain: ", chain.name);
+
   // Configure CDP Wallet Provider
   const cdpConfig: NonNullable<Parameters<typeof CdpWalletProvider.configureWithWallet>[0]> = {
     apiKeyName: process.env.CDP_API_KEY_NAME,
     apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     cdpWalletData: walletDataStr, // CDP expects this as a string | undefined for some reason
-    networkId: process.env.NETWORK_ID || cdpWalletData.networkId,
+    networkId: networkId,
   };
 
   // create wallet providers
   const cdpWalletProvider = await CdpWalletProvider.configureWithWallet(cdpConfig);
-  const viemClient = createViemClient(Buffer.from(cdpWalletData.seed, "hex"), anvil);
+  const viemClient = createViemClient(Buffer.from(cdpWalletData.seed, "hex"), chain);
+  console.log(viemClient.account.address);
 
   // Save wallet data
   const exportedWallet = await cdpWalletProvider.exportWallet();
@@ -98,11 +120,7 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
   });
 
   const tools = await getLangChainTools(agentkit);
-
-  // Store buffered conversation history in memory
-  const memory = new MemorySaver();
-
-  // Create React Agent using the LLM and CDP AgentKit tools
+  const memory = new MemorySaver(); // store buffered conversation history in memory
   const agent = createReactAgent({
     llm,
     tools,

@@ -1,5 +1,5 @@
 import { Address, createWalletClient, Hex, publicActions } from "viem";
-import { createPublicClient, http } from "viem";
+import { http } from "viem";
 import { anvil, base, baseSepolia } from "viem/chains";
 import { hdKeyToAccount, HDKey } from "viem/accounts";
 
@@ -19,6 +19,6 @@ export function createViemClient(masterSeed: Uint8Array, chain: ViemCDPChains) /
   return createWalletClient({
     account: hdKeyToAccount(HDKey.fromMasterSeed(masterSeed)),
     chain,
-    transport: http(),
+    transport: chain.name === "Anvil" ? http("http://localhost:8545") : http(),
   }).extend(publicActions);
 }

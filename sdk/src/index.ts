@@ -21,14 +21,9 @@ async function main() {
   });
 
   try {
-    const agentInit = await initializeAgent(
-      CDP_MPC_WALLET_PATH,
-      "gpt-4o-mini",
-      "CDP Example Agent"
-    );
+    const agentInit = await initializeAgent(CDP_MPC_WALLET_PATH, "gpt-4o-mini", "CDP Example Agent");
 
-    const question = (prompt: string): Promise<string> =>
-      new Promise((resolve) => rl.question(prompt, resolve));
+    const question = (prompt: string): Promise<string> => new Promise((resolve) => rl.question(prompt, resolve));
 
     let exit = false;
     while (!exit) {
@@ -39,9 +34,7 @@ async function main() {
 
       const CHOICES = ["chat", "auto"] as const;
       type CHOICES = (typeof CHOICES)[number];
-      const choice = (await question("\nChoose a mode by typing its name: "))
-        .toLowerCase()
-        .trim() as CHOICES | "exit";
+      const choice = (await question("\nChoose a mode by typing its name: ")).toLowerCase().trim() as CHOICES | "exit";
 
       switch (choice) {
         case "chat": {
@@ -59,9 +52,7 @@ async function main() {
         }
         default: {
           choice satisfies never;
-          console.log(
-            `Invalid choice, please try again from (${CHOICES.join(", ")}).`
-          );
+          console.log(`Invalid choice, please try again from (${CHOICES.join(", ")}).`);
           break;
         }
       }

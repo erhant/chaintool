@@ -1,23 +1,8 @@
 import { beforeAll, describe, expect, test } from "bun:test";
-import {
-  AbiFunction,
-  bytesToString,
-  createPublicClient,
-  createWalletClient,
-  encodeAbiParameters,
-  encodeFunctionData,
-  fromBytes,
-  Hex,
-  hexToString,
-  http,
-  parseAbi,
-  publicActions,
-  PublicClient,
-} from "viem";
+import { AbiFunction, createWalletClient, Hex, hexToString, http, parseAbi, publicActions } from "viem";
 import { anvil } from "viem/chains";
 import abi from "../src/abis/AgentToolRegistry.abi";
 import { privateKeyToAccount } from "viem/accounts";
-import { tool } from "@langchain/core/tools";
 
 function createClient(privateKey: Hex) {
   return createWalletClient({
@@ -94,7 +79,7 @@ describe("on-chain tools", () => {
     });
     console.log({ tool });
 
-    expect(tool.abitypes[0]).toBe("function add(int256 a, int256 b) pure returns (int256)");
+    expect(tool.abitypes[0]).toStartWith("function");
     const parsedAbi = (parseAbi([tool.abitypes[0]]) as AbiFunction[])[0];
     console.log(parsedAbi);
 

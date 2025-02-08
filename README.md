@@ -15,10 +15,10 @@ AgentKit supports tools within the code. This project aims to improve upon this 
 Here is a chat flow:
 
 ```diff
-- First, fetch all on-chain tools for me.
+- First, fetch all chaintools for me.
 + AI uses `observeTools` action.
 # ...
-- Please get the details of the "Add" tool.
+- Please get the details of the "Add" chaintool.
 + AI uses `observeToolAbis` action.
 # ...
 - Use this tool to add numbers 5 and 9 please.
