@@ -4,6 +4,7 @@ pragma solidity ^0.8.22;
 import {Test} from "forge-std/Test.sol";
 import {AgentTool, AgentToolRegistry} from "../src/AgentTools.sol";
 import {AddTool} from "../src/tools/AddTool.sol";
+import {SayByeTool} from "../src/tools/SayByeTool.sol";
 
 contract AgentToolRegistryTest is Test {
     AgentToolRegistry public registry;
@@ -194,5 +195,33 @@ contract AgentToolRegistryTest is Test {
         registry.register("Tool3", "Desc3", abitypes, categories1, address(3), address(this));
         bytes32[] memory categoriesAfterThird = registry.getRegisteredCategories();
         assertEq(categoriesAfterThird.length, 2);
+    }
+
+    function test_SayByeTool() public {
+        // deploy say bye tool
+        SayByeTool sayByeTool = new SayByeTool(address(registry));
+        vm.label(address(sayByeTool), "SayByeTool");
+
+        // registers itself; expect the event
+        vm.expectEmit(address(registry));
+        emit AgentToolRegistry.ToolRegistered(0, "Say Bye", address(sayByeTool), address(this), "misc");
+        sayByeTool.register();
+
+        // get the registered tool
+        AgentTool memory tool = registry.getTool(0);
+
+        // verify tool details
+        assertEq(tool.idx, 0);
+        assertEq(tool.name, "Say Bye");
+        assertEq(tool.categories[0], "misc");
+        assertEq(tool.target, address(sayByeTool));
+        assertEq(tool.owner, address(this));
+
+        // test the sayBye functionality
+        assertEq(sayByeTool.numAgentSaidBye(address(this)), 0);
+        sayByeTool.sayBye();
+        assertEq(sayByeTool.numAgentSaidBye(address(this)), 1);
+        sayByeTool.sayBye();
+        assertEq(sayByeTool.numAgentSaidBye(address(this)), 2);
     }
 }

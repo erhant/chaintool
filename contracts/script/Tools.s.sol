@@ -6,6 +6,7 @@ import {AgentToolRegistry} from "../src/AgentTools.sol";
 
 import {AddTool} from "../src/tools/AddTool.sol";
 import {SayHiTool} from "../src/tools/SayHiTool.sol";
+import {SayByeTool} from "../src/tools/SayByeTool.sol";
 
 contract NewAddTool is Script {
     function run() public {
@@ -108,6 +109,21 @@ contract NewSayHiTool is Script {
         // SayHiTool sayHiTool = SayHiTool(0x845C0727F61E61Bc0AB80731B33037BF3585824e);
 
         sayHiTool.register();
+
+        vm.stopBroadcast();
+    }
+}
+
+/// @dev Registers a tool that allows agents to let us know that they are here!
+contract NewSayByeTool is Script {
+    function run() public {
+        address registryAddress = vm.envAddress("REGISTRY");
+        require(registryAddress != address(0), "Invalid registry address");
+
+        vm.startBroadcast();
+
+        SayByeTool sayByeTool = new SayByeTool(registryAddress);
+        sayByeTool.register();
 
         vm.stopBroadcast();
     }
