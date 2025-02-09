@@ -1,5 +1,5 @@
+import { WalletDefault } from "@coinbase/onchainkit/wallet";
 import { Group, Stack, Text, Title } from "@mantine/core";
-import { ConnectKitButton } from "connectkit";
 import type { FC } from "react";
 
 const Header: FC = () => {
@@ -11,7 +11,7 @@ const Header: FC = () => {
       </Stack>
 
       <span style={{ flexGrow: 1 }} />
-      <ConnectKitButton showBalance mode="light" />
+      <WalletDefault />
     </Group>
   );
 };
