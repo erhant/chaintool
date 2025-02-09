@@ -94,4 +94,105 @@ contract AgentToolRegistryTest is Test {
         vm.expectRevert(AgentToolRegistry.MissingCategories.selector);
         registry.register("Fail", "Should fail.", abis, categories, address(this), msg.sender);
     }
+
+    function testGetToolsByCategory() public {
+        // Register tools in different categories
+        bytes32 category1 = bytes32("category1");
+        bytes32 category2 = bytes32("category2");
+
+        string[] memory abitypes = new string[](1);
+        abitypes[0] = "function test()";
+
+        bytes32[] memory categories1 = new bytes32[](1);
+        categories1[0] = category1;
+
+        bytes32[] memory categories2 = new bytes32[](1);
+        categories2[0] = category2;
+
+        registry.register("Tool1", "Desc1", abitypes, categories1, address(1), address(this));
+        registry.register("Tool2", "Desc2", abitypes, categories1, address(2), address(this));
+        registry.register("Tool3", "Desc3", abitypes, categories2, address(3), address(this));
+
+        // Test getting tools by category1
+        AgentTool[] memory toolsInCat1 = registry.getToolsByCategory(category1);
+        assertEq(toolsInCat1.length, 2);
+        assertEq(toolsInCat1[0].name, "Tool1");
+        assertEq(toolsInCat1[1].name, "Tool2");
+
+        // Test getting tools by category2
+        AgentTool[] memory toolsInCat2 = registry.getToolsByCategory(category2);
+        assertEq(toolsInCat2.length, 1);
+        assertEq(toolsInCat2[0].name, "Tool3");
+
+        // Test getting tools by non-existent category
+        AgentTool[] memory emptyTools = registry.getToolsByCategory(bytes32("nonexistent"));
+        assertEq(emptyTools.length, 0);
+    }
+
+    function testGetToolsByCategories() public {
+        // Register tools with multiple categories
+        bytes32 category1 = bytes32("category1");
+        bytes32 category2 = bytes32("category2");
+
+        string[] memory abitypes = new string[](1);
+        abitypes[0] = "function test()";
+
+        bytes32[] memory categoriesBoth = new bytes32[](2);
+        categoriesBoth[0] = category1;
+        categoriesBoth[1] = category2;
+
+        registry.register("Tool1", "Desc1", abitypes, categoriesBoth, address(1), address(this));
+
+        bytes32[] memory categories1 = new bytes32[](1);
+        categories1[0] = category1;
+        registry.register("Tool2", "Desc2", abitypes, categories1, address(2), address(this));
+
+        // Test getting tools by multiple categories
+        bytes32[] memory queryCategories = new bytes32[](2);
+        queryCategories[0] = category1;
+        queryCategories[1] = category2;
+
+        AgentTool[] memory tools = registry.getToolsByCategories(queryCategories);
+        assertEq(tools.length, 3); // Tool1 appears in both categories, Tool2 in category1
+        assertEq(tools[0].name, "Tool1");
+        assertEq(tools[1].name, "Tool2");
+        assertEq(tools[2].name, "Tool1");
+    }
+
+    function testGetRegisteredCategories() public {
+        // Initial state should have no categories
+        bytes32[] memory initialCategories = registry.getRegisteredCategories();
+        assertEq(initialCategories.length, 0);
+
+        // Register tools with different categories
+        bytes32 category1 = bytes32("category1");
+        bytes32 category2 = bytes32("category2");
+
+        string[] memory abitypes = new string[](1);
+        abitypes[0] = "function test()";
+
+        bytes32[] memory categories1 = new bytes32[](1);
+        categories1[0] = category1;
+
+        bytes32[] memory categories2 = new bytes32[](1);
+        categories2[0] = category2;
+
+        // Register first tool
+        registry.register("Tool1", "Desc1", abitypes, categories1, address(1), address(this));
+        bytes32[] memory categoriesAfterFirst = registry.getRegisteredCategories();
+        assertEq(categoriesAfterFirst.length, 1);
+        assertEq(categoriesAfterFirst[0], category1);
+
+        // Register second tool with different category
+        registry.register("Tool2", "Desc2", abitypes, categories2, address(2), address(this));
+        bytes32[] memory categoriesAfterSecond = registry.getRegisteredCategories();
+        assertEq(categoriesAfterSecond.length, 2);
+        assertEq(categoriesAfterSecond[0], category1);
+        assertEq(categoriesAfterSecond[1], category2);
+
+        // Register third tool with existing category (shouldn't add new category)
+        registry.register("Tool3", "Desc3", abitypes, categories1, address(3), address(this));
+        bytes32[] memory categoriesAfterThird = registry.getRegisteredCategories();
+        assertEq(categoriesAfterThird.length, 2);
+    }
 }

@@ -1,6 +1,6 @@
 /**
  * A schema to represent a Chaintool usage.
- * Schema ID: 4359049f-7ba6-43e5-be3c-4a511dc86783 (created via test)
+ * Schema ID: b6c4dc6a-ed31-489f-9d49-11d4fb96927f (created via nillion.test.ts)
  * See also: https://docs.nillion.com/build/secret-vault-quickstart
  */
 export const nillionSchema = {

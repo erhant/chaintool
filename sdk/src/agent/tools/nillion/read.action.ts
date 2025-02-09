@@ -9,7 +9,7 @@ const SCHEMA = z.object({
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
-export const nillionReader = (config: NillionOrgConfig, schemaId: string) =>
+export const nillionRead = (config: NillionOrgConfig, schemaId: string) =>
   customActionProvider({
     name: "nillion_read_vault",
     description:
@@ -28,7 +28,7 @@ export const nillionReader = (config: NillionOrgConfig, schemaId: string) =>
         name: string;
         description: string;
       }[];
-      console.log({ nodeData });
+      // console.log({ nodeData });
       const data = nodeData.map((d) => ({
         index: Number(d.index),
         name: d.name,

@@ -9,7 +9,6 @@ describe("nillion example", () => {
   test("create schema", async () => {
     schemaId = await createNillionSchema(nillionOrgConfig, nillionSchema);
     console.log("schema-id:", schemaId);
-    // schema-id: 33a26de1-d663-45aa-b699-ebc8d0bf09f4
   });
 
   test("write and read", async () => {

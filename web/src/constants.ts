@@ -1,22 +1,13 @@
-import type { Address } from "viem";
+import { Address, Hex } from "viem";
 
-export type Chaintool = {
-  description: string;
-  idx: bigint;
-  category: string;
-  name?: string;
-  target?: Address;
-  owner?: Address;
-};
-
-export type ChaintoolDetailed = {
+export type ChaintoolType = {
   idx: bigint;
   name: string;
   desc: string;
-  abitypes: readonly string[];
-  categories: readonly `0x${string}`[];
-  target: `0x${string}`;
-  owner: `0x${string}`;
+  abitypes: string[];
+  categories: Hex[];
+  target: Address;
+  owner: Address;
 };
 
-export const CONTRACT_ADDRESS = "0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa";
+export const CONTRACT_ADDRESS = "0x5d29f6180A7a3D02623c1F74e4244C53beAA1c53";

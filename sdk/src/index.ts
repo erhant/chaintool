@@ -24,7 +24,7 @@ async function main() {
   try {
     const agentInit = await initializeAgent(CDP_MPC_WALLET_PATH, "gpt-4o", "Chaintool CDP-Agent", {
       config: nillionOrgConfig,
-      schemaId: "c2b439c9-76a5-4c03-9355-ee70161182f3",
+      schemaId: "b6c4dc6a-ed31-489f-9d49-11d4fb96927f",
     });
 
     const question = (prompt: string): Promise<string> => new Promise((resolve) => rl.question(prompt, resolve));

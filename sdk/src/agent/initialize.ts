@@ -18,8 +18,9 @@ import { createViemClient, ViemCDPChains } from "./tools/chaintool";
 import { Address, Hex } from "viem";
 import { z } from "zod";
 import { anvil, base, baseSepolia } from "viem/chains";
-import { nillionReader, nillionWriter } from "./tools/nillion";
+import { nillionRead, nillionWrite } from "./tools/nillion";
 import { NillionOrgConfig } from "./tools/nillion/config";
+import { getChaintoolCategories } from "./tools/chaintool/getToolCategories.action";
 
 // list of allowed models for this agent
 const OpenAIModel = ["gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"] as const;
@@ -87,7 +88,7 @@ export async function initializeAgent(
     }
     case "base-sepolia": {
       chain = baseSepolia;
-      registryAddress = "0x9eD9db9C2fBD5B913635919BFb4784BcB941b7Fa";
+      registryAddress = "0x5d29f6180A7a3D02623c1F74e4244C53beAA1c53";
       break;
     }
     default: {
@@ -115,6 +116,7 @@ export async function initializeAgent(
   const agentkit = await AgentKit.from({
     walletProvider: cdpWalletProvider,
     actionProviders: [
+      // no ERC20 or WETH here :)
       pythActionProvider(),
       walletActionProvider(),
       cdpApiActionProvider({
@@ -126,12 +128,13 @@ export async function initializeAgent(
         apiKeyPrivateKey: cdpConfig.apiKeyPrivateKey,
       }),
       // chaintool
+      getChaintoolCategories(registryAddress, viemClient),
       getChaintoolsByCategory(registryAddress, viemClient),
       getChaintoolByIndexAction(registryAddress, viemClient),
       useChaintoolAction(viemClient),
       // nillion
-      nillionReader(nillion.config, nillion.schemaId),
-      nillionWriter(nillion.config, nillion.schemaId),
+      nillionRead(nillion.config, nillion.schemaId),
+      nillionWrite(nillion.config, nillion.schemaId),
     ],
   });
 

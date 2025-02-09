@@ -15,6 +15,7 @@ contract NewAddTool is Script {
         vm.startBroadcast();
 
         AddTool addTool = new AddTool(registryAddress);
+        // AddTool addTool = AddTool(0x41803f815c0969E04D2414709f8fA416E30c1398);
         addTool.register();
 
         vm.stopBroadcast();
@@ -104,6 +105,8 @@ contract NewSayHiTool is Script {
         vm.startBroadcast();
 
         SayHiTool sayHiTool = new SayHiTool(registryAddress);
+        // SayHiTool sayHiTool = SayHiTool(0x845C0727F61E61Bc0AB80731B33037BF3585824e);
+
         sayHiTool.register();
 
         vm.stopBroadcast();

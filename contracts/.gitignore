@@ -18,3 +18,5 @@ node_modules
 
 # private setups
 setup.base-sepolia.sh
+
+.DS_Store

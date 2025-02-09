@@ -6,8 +6,8 @@ const Header: FC = () => {
   return (
     <Group p="xs">
       <Stack gap="xs">
-        <Title order={1}>Chaintool</Title>
-        <Text>Dynamic & agentic tools on-chain!</Text>
+        <Title order={1}>Chaintool Viewer</Title>
+        <Text>View all dynamic & agentic tools on-chain!</Text>
       </Stack>
 
       <span style={{ flexGrow: 1 }} />

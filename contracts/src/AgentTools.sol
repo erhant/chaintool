@@ -29,7 +29,7 @@ struct AgentTool {
     address owner;
 }
 
-/// @notice This is a contract that will be used to register agents and tools.
+/// @notice This is a contract that will be used to register Chaintools.
 /// @author erhant
 contract AgentToolRegistry is Ownable {
     /*//////////////////////////////////////////////////////////////
@@ -51,6 +51,8 @@ contract AgentToolRegistry is Ownable {
 
     /// @notice Emitted when a tool is registered.
     event ToolRegistered(uint256 idx, string name, address target, address indexed owner, bytes32 indexed category);
+    /// @notice Emitted when a category is registered for the first time.
+    event CategoryRegistered(uint256 idx, bytes32 indexed category);
 
     /*//////////////////////////////////////////////////////////////
                                  STORAGE
@@ -61,6 +63,9 @@ contract AgentToolRegistry is Ownable {
 
     /// @notice A mapping of tool indexes by category.
     mapping(bytes32 category => uint256[]) public toolIdxsByCategory;
+
+    /// @notice A list of all categories of registered tools.
+    bytes32[] registeredCategories;
 
     /*//////////////////////////////////////////////////////////////
                                   LOGIC
@@ -76,6 +81,58 @@ contract AgentToolRegistry is Ownable {
             revert OutOfBounds();
         }
         return tools[index];
+    }
+
+    /// @notice Returns all tools.
+    function getAllTools() external view returns (AgentTool[] memory) {
+        return tools;
+    }
+
+    /// @notice Returns all categories.
+    function getRegisteredCategories() external view returns (bytes32[] memory) {
+        return registeredCategories;
+    }
+
+    /// @notice Returns the tools in a given category.
+    function getToolsByCategories(bytes32[] calldata categories) external view returns (AgentTool[] memory) {
+        // allocate memory
+        uint256 totalLength;
+        for (uint256 i = 0; i < categories.length; i++) {
+            totalLength += toolIdxsByCategory[categories[i]].length;
+        }
+        AgentTool[] memory toolsInCategories = new AgentTool[](totalLength);
+
+        // get all tools
+        uint256 currentIndex = 0;
+        for (uint256 i = 0; i < categories.length; i++) {
+            uint256[] memory indexes = toolIdxsByCategory[categories[i]];
+            for (uint256 j = 0; j < indexes.length; j++) {
+                toolsInCategories[currentIndex] = tools[indexes[j]];
+                currentIndex++;
+            }
+        }
+
+        return toolsInCategories;
+    }
+
+    /// @notice Returns the tools in a given category.
+    function getToolsByCategory(bytes32 category) external view returns (AgentTool[] memory) {
+        uint256[] memory indexes = toolIdxsByCategory[category];
+        AgentTool[] memory toolsInCategory = new AgentTool[](indexes.length);
+        for (uint256 i = 0; i < indexes.length; i++) {
+            toolsInCategory[i] = tools[indexes[i]];
+        }
+        return toolsInCategory;
+    }
+
+    /// @notice Returns the indexes of the tools in the given category.
+    function getToolsByCategories(bytes32 category) external view returns (AgentTool[] memory) {
+        uint256[] memory indexes = toolIdxsByCategory[category];
+        AgentTool[] memory toolsInCategory = new AgentTool[](indexes.length);
+        for (uint256 i = 0; i < indexes.length; i++) {
+            toolsInCategory[i] = tools[indexes[i]];
+        }
+        return toolsInCategory;
     }
 
     /// @notice Returns the descriptions of the tools at the given indexes.
@@ -102,8 +159,8 @@ contract AgentToolRegistry is Ownable {
     function register(
         string memory name,
         string memory desc,
-        string[] memory abitypes,
-        bytes32[] memory categories,
+        string[] calldata abitypes,
+        bytes32[] calldata categories,
         address target,
         address owner
     ) external returns (uint256 idx) {
@@ -132,8 +189,14 @@ contract AgentToolRegistry is Ownable {
 
         // store idx & emit events for each category
         for (uint256 i = 0; i < categories.length; i++) {
-            toolIdxsByCategory[categories[i]].push(idx);
+            // record this category if it's not registered before!
+            if (toolIdxsByCategory[categories[i]].length == 0) {
+                registeredCategories.push(categories[i]);
+                emit CategoryRegistered(idx, categories[i]);
+            }
 
+            // push tool index to category
+            toolIdxsByCategory[categories[i]].push(idx);
             emit ToolRegistered(idx, name, target, owner, categories[i]);
         }
     }

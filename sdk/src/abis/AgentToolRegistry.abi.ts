@@ -6,6 +6,56 @@ export default [
   },
   {
     type: "function",
+    name: "getAllTools",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "tuple[]",
+        internalType: "struct AgentTool[]",
+        components: [
+          {
+            name: "idx",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "name",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "desc",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "abitypes",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "categories",
+            type: "bytes32[]",
+            internalType: "bytes32[]",
+          },
+          {
+            name: "target",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "owner",
+            type: "address",
+            internalType: "address",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "getDescriptions",
     inputs: [
       {
@@ -25,6 +75,19 @@ export default [
   },
   {
     type: "function",
+    name: "getRegisteredCategories",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bytes32[]",
+        internalType: "bytes32[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "getTool",
     inputs: [
       {
@@ -38,6 +101,174 @@ export default [
         name: "",
         type: "tuple",
         internalType: "struct AgentTool",
+        components: [
+          {
+            name: "idx",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "name",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "desc",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "abitypes",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "categories",
+            type: "bytes32[]",
+            internalType: "bytes32[]",
+          },
+          {
+            name: "target",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "owner",
+            type: "address",
+            internalType: "address",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getToolsByCategories",
+    inputs: [
+      {
+        name: "category",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple[]",
+        internalType: "struct AgentTool[]",
+        components: [
+          {
+            name: "idx",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "name",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "desc",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "abitypes",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "categories",
+            type: "bytes32[]",
+            internalType: "bytes32[]",
+          },
+          {
+            name: "target",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "owner",
+            type: "address",
+            internalType: "address",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getToolsByCategories",
+    inputs: [
+      {
+        name: "categories",
+        type: "bytes32[]",
+        internalType: "bytes32[]",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple[]",
+        internalType: "struct AgentTool[]",
+        components: [
+          {
+            name: "idx",
+            type: "uint256",
+            internalType: "uint256",
+          },
+          {
+            name: "name",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "desc",
+            type: "string",
+            internalType: "string",
+          },
+          {
+            name: "abitypes",
+            type: "string[]",
+            internalType: "string[]",
+          },
+          {
+            name: "categories",
+            type: "bytes32[]",
+            internalType: "bytes32[]",
+          },
+          {
+            name: "target",
+            type: "address",
+            internalType: "address",
+          },
+          {
+            name: "owner",
+            type: "address",
+            internalType: "address",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getToolsByCategory",
+    inputs: [
+      {
+        name: "category",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "tuple[]",
+        internalType: "struct AgentTool[]",
         components: [
           {
             name: "idx",
@@ -182,6 +413,25 @@ export default [
   },
   {
     type: "event",
+    name: "CategoryRegistered",
+    inputs: [
+      {
+        name: "idx",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "category",
+        type: "bytes32",
+        indexed: true,
+        internalType: "bytes32",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "OwnershipTransferred",
     inputs: [
       {
@@ -235,6 +485,21 @@ export default [
       },
     ],
     anonymous: false,
+  },
+  {
+    type: "error",
+    name: "InvalidAbiType",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "MissingAbiTypes",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "MissingCategories",
+    inputs: [],
   },
   {
     type: "error",

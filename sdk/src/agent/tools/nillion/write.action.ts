@@ -11,7 +11,7 @@ const SCHEMA = z.object({
 });
 type SCHEMA = z.infer<typeof SCHEMA>;
 
-export const nillionWriter = (config: NillionOrgConfig, schemaId: string) =>
+export const nillionWrite = (config: NillionOrgConfig, schemaId: string) =>
   customActionProvider({
     name: "nillion_write_vault",
     description: "Write Chaintool to Nillion nodes to keep a historical record.",
