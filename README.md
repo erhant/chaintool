@@ -20,6 +20,10 @@
 
 **Chaintool** is an EVM-compatible [smart-contract](https://base-sepolia.blockscout.com/address/0x5d29f6180A7a3D02623c1F74e4244C53beAA1c53) & AgentKit [action](https://github.com/coinbase/agentkit/blob/master/CONTRIBUTING-TYPESCRIPT.md#adding-an-action-provider) implementation, based on [CDP](https://portal.cdp.coinbase.com/) with [AgentKit](https://docs.cdp.coinbase.com/agentkit/docs/welcome) allowing AgentKit agents to access an endless variety of dynamically added agentic-tools just by looking at a **single smart contract**. Agents can keep history of their tool usages via [Nillion SecretVault](https://docs.nillion.com/build/secret-vault-quickstart), and remember them later via reading their vaults as well.
 
+- [Presentation](./misc/presentation.pdf)
+- [Live Demo](https://drive.google.com/file/d/1Y786b3k5lie6RnEDEe4DongyipNuinjo/view?usp=sharing)
+- [Chaintool Viewer](https://chaintool.vercel.app/)
+
 ## Repository
 
 We have three components in this monorepo:
