@@ -4,6 +4,7 @@ import { initializeAgent } from "./agent/initialize";
 import { validateEnvironment } from "./env";
 import { runAutonomousMode } from "./agent/modes/auto";
 import { runChatMode } from "./agent/modes/chat";
+import { nillionOrgConfig } from "./agent/tools/nillion/config";
 
 /**
  * Main entry point
@@ -21,7 +22,10 @@ async function main() {
   });
 
   try {
-    const agentInit = await initializeAgent(CDP_MPC_WALLET_PATH, "gpt-4o", "CDP Example Agent");
+    const agentInit = await initializeAgent(CDP_MPC_WALLET_PATH, "gpt-4o", "Chaintool CDP-Agent", {
+      config: nillionOrgConfig,
+      schemaId: "c2b439c9-76a5-4c03-9355-ee70161182f3",
+    });
 
     const question = (prompt: string): Promise<string> => new Promise((resolve) => rl.question(prompt, resolve));
 

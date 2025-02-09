@@ -18,6 +18,8 @@ import { createViemClient, ViemCDPChains } from "./tools/chaintool";
 import { Address, Hex } from "viem";
 import { z } from "zod";
 import { anvil, base, baseSepolia } from "viem/chains";
+import { nillionReader, nillionWriter } from "./tools/nillion";
+import { NillionOrgConfig } from "./tools/nillion/config";
 
 // list of allowed models for this agent
 const OpenAIModel = ["gpt-4-turbo", "gpt-4o", "gpt-4o-mini", "o1-mini", "o1-preview"] as const;
@@ -40,7 +42,15 @@ export type AgentInit = Awaited<ReturnType<typeof initializeAgent>>;
  * @param agentName - Name of the agent
  * @returns Agent executor and config
  */
-export async function initializeAgent(walletDataPath: string, model: OpenAIModel, agentName: string) {
+export async function initializeAgent(
+  walletDataPath: string,
+  model: OpenAIModel,
+  agentName: string,
+  nillion: {
+    config: NillionOrgConfig;
+    schemaId: string;
+  }
+) {
   const llm = new ChatOpenAI({ model });
 
   // Read existing wallet data if available
@@ -115,10 +125,13 @@ export async function initializeAgent(walletDataPath: string, model: OpenAIModel
         apiKeyName: cdpConfig.apiKeyName,
         apiKeyPrivateKey: cdpConfig.apiKeyPrivateKey,
       }),
-      // messageSigner,
+      // chaintool
       getChaintoolsByCategory(registryAddress, viemClient),
       getChaintoolByIndexAction(registryAddress, viemClient),
       useChaintoolAction(viemClient),
+      // nillion
+      nillionReader(nillion.config, nillion.schemaId),
+      nillionWriter(nillion.config, nillion.schemaId),
     ],
   });
 

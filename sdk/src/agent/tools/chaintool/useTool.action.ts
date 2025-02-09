@@ -4,10 +4,10 @@ import { Address, AbiFunction, parseAbi, isAddress, parseEther } from "viem";
 import { ViemCDPClient } from "./client";
 
 const SCHEMA = z.object({
-  abitype: z.string().describe("The selected function abi type from the tool, must include the entire ABI type."),
+  abitype: z.string().describe("The selected function abi type from the chaintool, must include the entire ABI type."),
   target: z
     .custom<Address>((d) => isAddress(d, { strict: false }), "Invalid Address")
-    .describe("The address of the tool."),
+    .describe("The target address of the chaintool."),
   toolArgs: z.array(z.unknown()).optional().describe("An array of arguments, respecting the function abi type."),
   value: z
     .string()

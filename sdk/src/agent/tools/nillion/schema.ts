@@ -1,9 +1,11 @@
-// https://ethglobal.com/events/agents/prizes#nillion
-// https://docs.nillion.com/build/secret-vault-quickstart
-
-const nillionSchema = {
+/**
+ * A schema to represent a Chaintool usage.
+ * Schema ID: 4359049f-7ba6-43e5-be3c-4a511dc86783 (created via test)
+ * See also: https://docs.nillion.com/build/secret-vault-quickstart
+ */
+export const nillionSchema = {
   $schema: "http://json-schema.org/draft-07/schema#",
-  title: "Web3 Experience Survey",
+  title: "Chaintool Usages",
   type: "array",
   items: {
     type: "object",
@@ -13,6 +15,17 @@ const nillionSchema = {
         format: "uuid",
         coerce: true,
       },
+      // tool index
+      index: {
+        type: "object",
+        properties: {
+          $share: {
+            type: "string",
+          },
+        },
+        required: ["$share"],
+      },
+      // tool name
       name: {
         type: "object",
         properties: {
@@ -22,7 +35,8 @@ const nillionSchema = {
         },
         required: ["$share"],
       },
-      years_in_web3: {
+      // tool description
+      description: {
         type: "object",
         properties: {
           $share: {
@@ -31,26 +45,7 @@ const nillionSchema = {
         },
         required: ["$share"],
       },
-      responses: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            rating: {
-              type: "integer",
-              minimum: 1,
-              maximum: 5,
-            },
-            question_number: {
-              type: "integer",
-              minimum: 1,
-            },
-          },
-          required: ["rating", "question_number"],
-        },
-        minItems: 1,
-      },
     },
-    required: ["_id", "name", "years_in_web3", "responses"],
+    required: ["_id", "index", "name", "description"],
   },
 } as const;

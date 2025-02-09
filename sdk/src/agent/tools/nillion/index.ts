@@ -2,6 +2,9 @@
 import { SecretVaultWrapper } from "nillion-sv-wrappers";
 import { NillionOrgConfig } from "./config";
 
+export * from "./read.action";
+export * from "./write.action";
+
 export async function createNillionSchema(orgConfig: NillionOrgConfig, schema: object) {
   const org = new SecretVaultWrapper(orgConfig.nodes, orgConfig.orgCredentials);
   await org.init();
