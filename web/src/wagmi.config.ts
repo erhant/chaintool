@@ -1,5 +1,5 @@
-import { createConfig } from "wagmi";
-import { coinbaseWallet } from "wagmi/connectors";
+import { createConfig, injected } from "wagmi";
+import { coinbaseWallet, metaMask } from "wagmi/connectors";
 import { baseSepolia } from "wagmi/chains";
 import { http } from "wagmi";
 
@@ -9,6 +9,8 @@ export const config = createConfig({
     coinbaseWallet({
       appName: "onchainkit",
     }),
+    metaMask(),
+    injected(),
   ],
   ssr: true,
   transports: {
